@@ -6,7 +6,7 @@
 #include <limits>
 #include <memory>
 
-
+//class used for setting constants needed for further ray tracing
 // Usings
 
 using std::shared_ptr;
@@ -15,8 +15,8 @@ using std::sqrt;
 
 // Constants
 
-const float infinity = std::numeric_limits<float>::infinity();
-const float pi = (float)3.1415926535897932385;
+const float infinity = std::numeric_limits<float>::infinity();//sets the constant of infinity
+const float pi = (float)3.1415926535897932385;//sets the constant of pi
 
 // Utility Functions
 

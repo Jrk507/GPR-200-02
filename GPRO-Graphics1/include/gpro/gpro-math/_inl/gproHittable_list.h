@@ -9,7 +9,7 @@
 using std::shared_ptr;
 using std::make_shared;
 
-class hittable_list : public hittable {
+class hittable_list : public hittable { // class of hittables list
 public:
     hittable_list() {}
     hittable_list(shared_ptr<hittable> object) { add(object); }
@@ -24,7 +24,7 @@ public:
     std::vector<shared_ptr<hittable>> objects;
 };
 
-bool hittable_list::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
+bool hittable_list::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {//stores the list of hittables that the ray comes in contact with
     hit_record temp_rec;
     bool hit_anything = false;
     auto closest_so_far = t_max;

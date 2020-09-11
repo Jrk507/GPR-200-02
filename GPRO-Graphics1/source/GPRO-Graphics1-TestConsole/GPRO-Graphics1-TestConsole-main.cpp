@@ -58,7 +58,7 @@ void testVector()
 #endif	// __cplusplus
 }
 */
-float hit_sphere(const point3& center, float radius, const ray& r) {
+float hit_sphere(const point3& center, float radius, const ray& r) {//colors the sphere we set in the image that is hit by the ray and colored with surface normals
 	vec3 oc = r.origin() - center;
 	float a = r.direction().length_squared();
 	float half_b = dot(oc, r.direction());
@@ -73,9 +73,9 @@ float hit_sphere(const point3& center, float radius, const ray& r) {
 	}
 }
 
-color ray_color(const ray& r) {
-	float t = hit_sphere(point3(0, 0, -1), (float)0.5, r);
-	if (t > 0.0) {
+color ray_color(const ray& r) {//the implementation of the ray class
+	float t = hit_sphere(point3(0, 0, -1), (float)0.5, r);//when the ray his the sphere
+	if (t > 0.0) {//sets the color for each hit
 		vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1));
 		return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
 	}
@@ -88,34 +88,34 @@ int main(int const argc, char const* const argv[])
 {
 	//Image
 
-	const float aspect_ratio = (float)16.0 / (float)9.0;
-	const int image_width = 400;
-	const int image_height = static_cast<int>(image_width / aspect_ratio);
+	const float aspect_ratio = (float)16.0 / (float)9.0;//ratio of width and height of the image being viewed
+	const int image_width = 400;//width of image 
+	const int image_height = static_cast<int>(image_width / aspect_ratio);//the height of the image 
 	
-	// Camera
+	// Camera(sets the viewpoint of the image in the ppm file)
 
 	float viewport_height = 2.0;
-	float viewport_width = aspect_ratio * viewport_height;
+	float viewport_width = aspect_ratio * viewport_height; 
 	float focal_length = 1.0;
 
-	vec3 origin = point3(0, 0, 0);
-	vec3 horizontal = vec3(viewport_width, 0, 0);
-	vec3 vertical = vec3(0, viewport_height, 0);
-	vec3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
+	vec3 origin = point3(0, 0, 0);//position of the origin in the picture
+	vec3 horizontal = vec3(viewport_width, 0, 0);//horizontal position of the camera to the image
+	vec3 vertical = vec3(0, viewport_height, 0);//vertical postion of the camera of the image
+	vec3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);//sets the lower corner postion for the vectors to use
 
 	//testVector();
-	ofstream img("image.ppm");	
+	ofstream img("image.ppm");	//the image created by this program
 
 
-	img << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+	img << "P3\n" << image_width << ' ' << image_height << "\n255\n";//size of the image
 	
-	for (int j = image_height - 1; j >= 0; --j) {
+	for (int j = image_height - 1; j >= 0; --j) {//used to run through the image 
 		for (int i = 0; i < image_width; ++i) {
-			float u = float(i) / (image_width - 1);
-			float v = float(j) / (image_height - 1);
-			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
-			color pixel_color = ray_color(r);
-			write_color(img, pixel_color);
+			float u = float(i) / (image_width - 1);//runs through the image on the x-axis
+			float v = float(j) / (image_height - 1);//runs through the image on the y-axis
+			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);//sends rays into the screen at each pixel
+			color pixel_color = ray_color(r);//sets the pixels the ray reads to specific colors
+			write_color(img, pixel_color);//prints the color to the image
 		}
 	}
 

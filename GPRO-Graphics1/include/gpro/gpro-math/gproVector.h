@@ -109,54 +109,54 @@ floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh);	// get sum o
 
 
 using std::sqrt;
-
+// this class is ued to store colors,locations, directions, offsets in a single class for use
 class vec3 {
 public:
-    vec3() : e{ 0,0,0 } {}
-    vec3(float e0, float e1, float e2) : e{ e0, e1, e2 } {}
-
+    vec3() : e{ 0,0,0 } {}//sets the class to have three variables 
+    vec3(float e0, float e1, float e2) : e{ e0, e1, e2 } {}//sets the variables to be floats
+	//constructor
     float x() const { return e[0]; }
     float y() const { return e[1]; }
     float z() const { return e[2]; }
-
+	//operator overloads
     vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
     float operator[](int i) const { return e[i]; }
     float& operator[](int i) { return e[i]; }
 
-    vec3& operator+=(const vec3& v) {
+    vec3& operator+=(const vec3& v) {// add equal operator overload
         e[0] += v.e[0];
         e[1] += v.e[1];
         e[2] += v.e[2];
         return *this;
     }
 
-    vec3& operator*=(const float t) {
+    vec3& operator*=(const float t) {//pointer = operator overload
         e[0] *= t;
         e[1] *= t;
         e[2] *= t;
         return *this;
     }
 
-    vec3& operator/=(const float t) {
+    vec3& operator/=(const float t) {//divide and equal operator overload
         return *this *= 1 / t;
     }
 
-    float length() const {
+    float length() const {//length of variables setr in class
         return sqrt(length_squared());
     }
 
-    float length_squared() const {
+    float length_squared() const {//square root of variables set in class
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
 
 public:
-    float e[3];
+    float e[3];//seting a fourth changable variable for vec3 class
 };
 
 // Type aliases for vec3
 using point3 = vec3;   // 3D point
 using color = vec3;    // RGB color
-
+//inline functions for vec3 class 
 inline std::ostream& operator<<(std::ostream& out, const vec3& v) {
 	return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
 }

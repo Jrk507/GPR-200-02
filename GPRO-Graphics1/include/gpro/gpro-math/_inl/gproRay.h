@@ -3,7 +3,7 @@
 
 #include <gpro\gpro-math\gproVector.h>
 
-class ray {
+class ray {//class for the P(t) that computes the color is seen along the ray
 public:
     ray() {}
     ray(const point3& origin, const vec3& direction)

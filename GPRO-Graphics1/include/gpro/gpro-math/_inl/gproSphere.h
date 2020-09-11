@@ -5,7 +5,7 @@
 #include <gpro\gpro-math\_inl\gproRay.h>
 #include <gpro\gpro-math\_inl\gproHittable.h>
 
-class sphere : public hittable {
+class sphere : public hittable {//the class holding multiple spheres
 public:
     sphere() {}
     sphere(point3 cen, float r) : center(cen), radius(r) {};
@@ -17,7 +17,7 @@ public:
     point3 center;
     float radius{};
 };
-bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {
+bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const {//when a sphere is hit by a ray 
     vec3 oc = r.origin() - center;
     float a = r.direction().length_squared();
     float half_b = dot(oc, r.direction());
@@ -27,7 +27,7 @@ bool sphere::hit(const ray& r, float t_min, float t_max, hit_record& rec) const 
     if (discriminant > 0) {
         float root = sqrt(discriminant);
 
-        float temp = (-half_b - root) / a;
+        float temp = (-half_b - root) / a;// sets the hit for the ray and when the ray is reflected
         if (temp < t_max && temp > t_min) {
             rec.t = temp;
             rec.p = r.at(rec.t);
