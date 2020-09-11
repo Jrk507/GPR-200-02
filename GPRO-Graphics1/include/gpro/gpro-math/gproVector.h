@@ -108,6 +108,11 @@ floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh);	// get sum o
 #include <iostream>
 
 
+
+//Code from Peter Shirley(https://raytracing.github.io/books/RayTracingInOneWeekend.html#outputanimage/addingaprogressindicator)
+//Code from Daniel S. Buckstein
+//Edited by Jason  Kmieciak
+
 using std::sqrt;
 // this class is ued to store colors,locations, directions, offsets in a single class for use
 class vec3 {

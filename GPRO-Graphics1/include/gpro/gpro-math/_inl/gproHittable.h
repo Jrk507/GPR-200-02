@@ -1,3 +1,5 @@
+//Code from Peter Shirley(https://raytracing.github.io/books/RayTracingInOneWeekend.html#outputanimage/addingaprogressindicator)
+//Edited by Jason  Kmieciak
 #ifndef HITTABLE_H
 #define HITTABLE_H
 

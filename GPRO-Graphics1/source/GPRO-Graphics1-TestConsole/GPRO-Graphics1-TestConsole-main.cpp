@@ -22,7 +22,9 @@
 	Modified because: ____________
 */
 
-
+//Code from Peter Shirley(https://raytracing.github.io/books/RayTracingInOneWeekend.html#outputanimage/addingaprogressindicator)
+//Code from Daniel S. Buckstein
+//Edited by Jason  Kmieciak
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>

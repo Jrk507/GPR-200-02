@@ -1,3 +1,7 @@
+
+
+//Code from Peter Shirley(https://raytracing.github.io/books/RayTracingInOneWeekend.html#outputanimage/addingaprogressindicator)
+//Edited by Jason  Kmieciak
 #ifndef SPHERE_H
 #define SPHERE_H
 

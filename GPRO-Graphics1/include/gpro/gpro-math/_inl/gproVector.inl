@@ -21,7 +21,7 @@
 	Modified by: ____________
 	Modified because: ____________
 */
-
+//Code from Daniel S. Buckstein
 #ifdef _GPRO_VECTOR_H_
 #ifndef _GPRO_VECTOR_INL_
 #define _GPRO_VECTOR_INL_
