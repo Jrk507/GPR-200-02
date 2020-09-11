@@ -28,13 +28,12 @@
 #include <iostream>
 #include <ostream>
 #include <fstream>
-
-
 #include "gpro/gpro-math/gproVector.h"
+#include "../../project/VisualStudio/GPRO-Graphics1-TestConsole/Color.h"
 using namespace std;
 
 
-
+/*
 void testVector()
 {
 	// test array vector initializers and functions
@@ -56,11 +55,11 @@ void testVector()
 	d = c + b + a;									// sum, init, sum, init, assign	-> d = (9, 12, 15)
 #endif	// __cplusplus
 }
-
+*/
 
 int main(int const argc, char const* const argv[])
 {
-	testVector();
+	//testVector();
 	ofstream img("image.ppm");
 
 	int image_width = 256;
@@ -71,16 +70,8 @@ int main(int const argc, char const* const argv[])
 	for (int j = image_height - 1; j >= 0; --j) {
 		img << "\rScanlines remaining: " << j << ' ' << flush;
 		for (int i = 0; i < image_width; ++i) {
-			float r = float(i) / float(image_width);
-			float g = float(j) / float(image_height);
-			double b = 0.5;
-			 
-			int ir = static_cast<int>(255.999 * r);
-			int ig = static_cast<int>(255.999 * g);
-			int ib = static_cast<int>(255.999 * b);
-
-			img << ir << ' ' << ig << ' ' << ib << '\n';
-			
+			color pixel_color(float(i) / (image_width - 1), float(j) / (image_height - 1), 0.25);
+			write_color(img, pixel_color);
 		}
 	}
 

@@ -26,9 +26,9 @@
 #ifndef _GPRO_VECTOR_INL_
 #define _GPRO_VECTOR_INL_
 
-
+	
 #ifdef __cplusplus
-
+/*
 inline vec3::vec3()
 	: x(0.0f), y(0.0f), z(0.0f)
 {
@@ -103,6 +103,8 @@ inline floatv vec3sum(float3 v_sum, float3 const v_lh, float3 const v_rh)
 	return vec3init(v_sum, (v_lh[0] + v_rh[0]), (v_lh[1] + v_rh[1]), (v_lh[2] + v_rh[2]));
 }
 
+*/
 
+#endif
 #endif	// !_GPRO_VECTOR_INL_
 #endif	// _GPRO_VECTOR_H_
