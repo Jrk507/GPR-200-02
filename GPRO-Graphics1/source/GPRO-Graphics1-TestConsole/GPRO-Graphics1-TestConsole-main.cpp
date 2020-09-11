@@ -30,6 +30,8 @@
 #include <fstream>
 #include "gpro/gpro-math/gproVector.h"
 #include "../../project/VisualStudio/GPRO-Graphics1-TestConsole/Color.h"
+#include <gpro\gpro-math\_inl\gproRay.h>
+
 using namespace std;
 
 
@@ -56,21 +58,42 @@ void testVector()
 #endif	// __cplusplus
 }
 */
+color ray_color(const ray& r) {
+	vec3 unit_direction = unit_vector(r.direction());
+	float t = (float)0.5 * (float)(unit_direction.y() + 1.0);
+	return (float)(1.0 - t) * color((float)1.0, (float)1.0, (float)1.0) + t * color((float)0.5, (float)0.7, (float)1.0);
+}
 
 int main(int const argc, char const* const argv[])
 {
-	//testVector();
-	ofstream img("image.ppm");
+	const float aspect_ratio = (float)16.0 / (float)9.0;
+	const int image_width = 400;
+	const int image_height = static_cast<int>(image_width / aspect_ratio);
 
-	int image_width = 256;
-	int image_height = 256;
+	// Camera
+
+	float viewport_height = 2.0;
+	float viewport_width = aspect_ratio * viewport_height;
+	float focal_length = 1.0;
+
+	vec3 origin = point3(0, 0, 0);
+	vec3 horizontal = vec3(viewport_width, 0, 0);
+	vec3 vertical = vec3(0, viewport_height, 0);
+	vec3 lower_left_corner = origin - horizontal / 2 - vertical / 2 - vec3(0, 0, focal_length);
+
+	//testVector();
+	ofstream img("image.ppm");	
+
 
 	img << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 	
 	for (int j = image_height - 1; j >= 0; --j) {
 		img << "\rScanlines remaining: " << j << ' ' << flush;
 		for (int i = 0; i < image_width; ++i) {
-			color pixel_color(float(i) / (image_width - 1), float(j) / (image_height - 1), 0.25);
+			float u = float(i) / (image_width - 1);
+			float v = float(j) / (image_height - 1);
+			ray r(origin, lower_left_corner + u * horizontal + v * vertical - origin);
+			color pixel_color = ray_color(r);
 			write_color(img, pixel_color);
 		}
 	}
