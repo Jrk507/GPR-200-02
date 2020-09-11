@@ -58,7 +58,17 @@ void testVector()
 #endif	// __cplusplus
 }
 */
+bool hit_sphere(const point3& center, float radius, const ray& r) {
+	vec3 oc = r.origin() - center;
+	float a = dot(r.direction(), r.direction());
+	float b = (float)2.0 * dot(oc, r.direction());
+	float c = dot(oc, oc) - radius * radius;
+	float discriminant = b * b - 4 * a * c;
+	return (discriminant > 0);
+}
 color ray_color(const ray& r) {
+	if (hit_sphere(point3(0, 0, -1), 0.5, r))
+		return color(1, 0, 0);
 	vec3 unit_direction = unit_vector(r.direction());
 	float t = (float)0.5 * (float)(unit_direction.y() + 1.0);
 	return (float)(1.0 - t) * color((float)1.0, (float)1.0, (float)1.0) + t * color((float)0.5, (float)0.7, (float)1.0);
@@ -88,7 +98,6 @@ int main(int const argc, char const* const argv[])
 	img << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 	
 	for (int j = image_height - 1; j >= 0; --j) {
-		img << "\rScanlines remaining: " << j << ' ' << flush;
 		for (int i = 0; i < image_width; ++i) {
 			float u = float(i) / (image_width - 1);
 			float v = float(j) / (image_height - 1);
