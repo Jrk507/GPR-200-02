@@ -25,9 +25,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+#include <ostream>
+#include <fstream>
 
 
 #include "gpro/gpro-math/gproVector.h"
+using namespace std;
+
 
 
 void testVector()
@@ -56,6 +61,31 @@ void testVector()
 int main(int const argc, char const* const argv[])
 {
 	testVector();
+	ofstream img("image.ppm");
+
+	int image_width = 256;
+	int image_height = 256;
+
+	img << "P3\n" << image_width << ' ' << image_height << "\n255\n";
+	
+	for (int j = image_height - 1; j >= 0; --j) {
+		img << "\rScanlines remaining: " << j << ' ' << flush;
+		for (int i = 0; i < image_width; ++i) {
+			float r = float(i) / float(image_width);
+			float g = float(j) / float(image_height);
+			double b = 0.5;
+			 
+			int ir = static_cast<int>(255.999 * r);
+			int ig = static_cast<int>(255.999 * g);
+			int ib = static_cast<int>(255.999 * b);
+
+			img << ir << ' ' << ig << ' ' << ib << '\n';
+			
+		}
+	}
+
+	img << "\nDone.\n";
+
 
 	printf("\n\n");
 	system("pause");
