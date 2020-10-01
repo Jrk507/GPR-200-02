@@ -108,9 +108,66 @@ void initSphere(out sSphere sphere,
 // calcColor: calculate the color of a pixel given a ray
 //    rayDirection: input ray direction
 //    rayOrigin:    input ray origin
-float lenSq(vec2 x)
+float lenSq(vec2 x)//squares the length of a vector
 {
     return dot(x, x);
+    
+}
+float dotunit(in vec3 unitone,in vec3 unittwo)//finds the coeffient of the dot product of two unit vectors
+{
+    return dot(unitone, unittwo);
+}
+float lenVec(in vec3 x,in vec3 y)
+{
+    return length(x-y);
+}
+vec3 vec(in vec3 x,in vec3 y,in float z)
+{
+    return (x - y)/z;
+}
+float pow4(in float a)
+{
+    a *= a; // square a
+    a *= a;	// original a^4
+   	return a;
+}
+float pow8(in float a)
+{
+    a *= a;
+    a *= a; 
+    a *= a;
+	return a;
+}
+float pow32(in float a)
+{
+    a *= a;
+    a *= a; 
+    a *= a;
+    a *= a;
+    a *= a;
+    return a;
+}
+float pow64(in float a)
+{
+
+    a *= a;	
+    a *= a;	
+    a *= a; 
+    a *= a;
+    a *= a;
+    a *= a;
+    return a;
+}
+float pow265(in float a)
+{
+    a *= a; 
+    a *= a;	
+    a *= a;	
+    a *= a; 
+    a *= a;
+    a *= a;
+    a *= a;
+    return a;
 }
 vec4 phongReflectance(in vec3 rayOrig,
                       in vec3 pos,
@@ -119,16 +176,18 @@ vec4 phongReflectance(in vec3 rayOrig,
                       in vec4 specReflect,
                       in float intensity)
 {
-        vec3 rayOrigin = vec3(rayOrig);
-        vec3 v = normalize(rayOrig - pos);
-        vec3 reflectedLight = reflect(-l,norm);
-        float specularCoefficient =dot(v,reflectedLight);
-        vec4 specularReflection = vec4(specReflect);
-     	vec3 h = normalize(l+v);
-        float aPrime = 4.0*intensity;
-        float blinnPhongCoefficient =dot(norm,h);
-        blinnPhongCoefficient =max(0.0,dot(norm,h));
-    	return pow(blinnPhongCoefficient,aPrime)*specularReflection;
+        vec3 rayOrigin = vec3(rayOrig);//sets rayOrigin
+    	float d = lenVec(rayOrig,pos);//distance between ray and position on sphere
+        vec3 v = (rayOrig - pos)/d;//sets unit view vector 
+        vec3 reflectedLight = reflect(-l,norm);//sets reflected light vector
+        float specularCoefficient =dotunit(v,reflectedLight);//diffuse coeffient found by doing the dot product of unit view vector and reflected light vector.
+        vec4 specularReflection = vec4(specReflect);//sets reflection color
+     	d = length(l+v);//distance of light vector and view vector
+        vec3 h =(l+v)/d;//sets unit halfway vector
+        float aPrime = 4.0*intensity;//sets power
+        float blinnPhongCoefficient =dotunit(norm,h);//blinn pong coeffcient set
+        blinnPhongCoefficient =max(0.0,blinnPhongCoefficient);
+    	return pow(blinnPhongCoefficient,aPrime)*specularReflection;//returns blinn Phong reflectance lights
 }
                    
                       
@@ -145,6 +204,7 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     
     pLight light;
     initPointLight(light, vec3(4.0,16.0,4.0), vec4(1.0,1.0,1.0,1.0), 200.0);
+    
     
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
@@ -167,39 +227,25 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
             //position - sphere.center.xyz);
             (position - sphere.center.xyz)
             	/ sphere.radius;
-        vec3 l = normalize(light.center.xzy - position);
-        float diffuseCoefficient = dot(normal,l);
-        diffuseCoefficient = max(0.0,diffuseCoefficient);
-        float d = length(light.center.xzy - position); 
-        float attenuatedIntensity = 1.0/(1.0+(d/light.intensity)+(pow(d,4.0)/pow(light.intensity,2.0)));
-        float diffuseIntensity = attenuatedIntensity*diffuseCoefficient;
-        sphere.color = vec4(normal * 0.5 + 0.5, 1.0);
-        vec4 sceneColor = diffuseIntensity*sphere.color;
-        rayOrigin.xyz = vec3(2.0,3.0,-1.0);
-        vec3 v = normalize(rayOrigin.xyz - position);
-        vec3 reflectedLight = reflect(-l,normal);
-        float specularCoefficient =dot(v,reflectedLight);
-        specularCoefficient =max(0.0,dot(v,reflectedLight));
-        vec4 specularReflection = vec4(1.0, 0.28, 0.0, 2.0);
-        vec4 reflectColor = pow(specularCoefficient,64.0)*specularReflection; 
-        vec3 h = normalize(l+v);
-        float aPrime = 4.0*64.0;
-        float blinnPhongCoefficient =dot(normal,h);
-        blinnPhongCoefficient =max(0.0,dot(normal,h));
-        reflectColor = pow(blinnPhongCoefficient,aPrime)*specularReflection; 
-        vec4 phongReflect = phongReflectance(vec3(12.0,-10.0,6.0),position,l,normal,vec4(1.0, 0.0, 0.5, 1.0),32.0);
-        vec4 phongReflect2 = phongReflectance(vec3(-8.0,-25.0,-5.0),position,l,normal,vec4(0.0, 1.0, 0.2, 1.0),64.0);
-        vec4 phongReflect3 = phongReflectance(vec3(-14.0,0.0,3.0),position,l,normal,vec4(0.5, 0.0, 1.0, 1.0),256.0);
         
-        
-       
-        vec4 ambientColor = vec4(0.1, 0.42, 0.7, 1.0);
-        float ambientIntensity = 0.0;
+        float d = lenVec(light.center.xzy,position);// distance between the light's center and the surface point
+        vec3 l = vec(light.center.xzy,position,d);//Calculates the light vector
+        float diffuseCoefficient = dotunit(normal,l);//diffuse coeffient found by doing the dot product of unit light vector and unit surface normal.
+        diffuseCoefficient = max(0.0,diffuseCoefficient);//clamps the diffuse coefficient
+        float attenuatedIntensity = 1.0/(1.0+(d/light.intensity)+(pow4(d)/(light.intensity*light.intensity)));//sets the attenuatedIntensity using common attenuated function
+        float diffuseIntensity = attenuatedIntensity*diffuseCoefficient;//sets diffuse intensity for the sphere
+        sphere.color = vec4(normalz * 0.5 + 0.5, 1.0);//sets sphere's color
+        vec4 sceneColor = diffuseIntensity*sphere.color;//sets Lambertian color on the surface being calculated on the sphere
+        vec4 phongReflect = phongReflectance(vec3(2.0,3.0,-1.0),position,l,normal,vec4(1.0, 0.28, 0.0, 2.0),64.0);//calls the function to set Phong reflectance
+        vec4 phongReflect2 = phongReflectance(vec3(12.0,-10.0,6.0),position,l,normal,vec4(1.0, 0.0, 0.5, 1.0),32.0);
+        vec4 phongReflect3 = phongReflectance(vec3(-8.0,-25.0,-5.0),position,l,normal,vec4(0.0, 1.0, 0.2, 1.0),64.0);
+        vec4 phongReflect4 = phongReflectance(vec3(-14.0,0.0,3.0),position,l,normal,vec4(0.5, 0.0, 1.0, 1.0),256.0);
+        vec4 ambientColor = vec4(0.1, 0.42, 0.7, 1.0);//static ambien color
+        float ambientIntensity = 0.0;//static ambient intensity
         int index = 4;
-        vec4 reflectArray[4]= vec4[4](reflectColor,phongReflect,phongReflect2,phongReflect3);
-        vec4 a = vec4(sceneColor+reflectArray[0])+(sceneColor+reflectArray[1]);
-        a = a + (sceneColor+reflectArray[2])+(sceneColor+reflectArray[3]);
-        vec4 phongColor = ambientIntensity*ambientColor+(a)
+        vec4 a = vec4(sceneColor+phongReflect)+(sceneColor+phongReflect2);//sums the Phong reflectance's
+        a = a + (sceneColor+phongReflect3)+(sceneColor+phongReflect4);
+        vec4 phongColor = ambientIntensity*ambientColor+(a)//sets multiple final Phong reflectance lights
 						  *light.color;
         
         //phongColor = ambientIntensity*ambientColor+(sceneColor*2.0+reflectColor)*light.color;
