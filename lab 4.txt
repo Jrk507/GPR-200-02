@@ -158,9 +158,13 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
         vec3 reflectedLight = reflect(-l,normal);
         float specularCoefficient =dot(v,reflectedLight);
         specularCoefficient =max(0.0,dot(v,reflectedLight));
+        vec4 specularReflection = vec4(0.0, 0.0, 1.0, 1.0);
+        vec4 temp = pow(specularCoefficient,256.0)*specularReflection; 
         
-        return vec4(pow(specularCoefficient,4.0),pow(specularCoefficient,4.0),pow(specularCoefficient,4.0), 1.0);
-        //return vec4(pow(specularCoefficient,4),pow(specularCoefficient,4),pow(specularCoefficient,4), 1.0);, specularCoefficient, specularCoefficient, 1.0);
+        vec4 ambientColor = vec4(0.0, 0.0, 0.0, 1.0);
+        
+        //return vec4(temp);
+        //return vec4(pow(specularCoefficient,4.0),pow(specularCoefficient,4.0),pow(specularCoefficient,4.0), 1.0);
         //return vec4(diffuseCoefficient, diffuseCoefficient, diffuseCoefficient, 1.0);
         //return vec4( diffuseIntensity,  diffuseIntensity,  diffuseIntensity, 1.0);
         //return vec4(normal * 0.5 + 0.5, 1.0);
