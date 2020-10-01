@@ -112,6 +112,27 @@ float lenSq(vec2 x)
 {
     return dot(x, x);
 }
+vec4 phongReflectance(in vec3 rayOrig,
+                      in vec3 pos,
+                      in vec3 l,
+                      in vec3 norm,
+                      in vec4 specReflect,
+                      in float intensity)
+{
+        vec3 rayOrigin = vec3(rayOrig);
+        vec3 v = normalize(rayOrig - pos);
+        vec3 reflectedLight = reflect(-l,norm);
+        float specularCoefficient =dot(v,reflectedLight);
+        vec4 specularReflection = vec4(specReflect);
+     	vec3 h = normalize(l+v);
+        float aPrime = 4.0*intensity;
+        float blinnPhongCoefficient =dot(norm,h);
+        blinnPhongCoefficient =max(0.0,dot(norm,h));
+    	return pow(blinnPhongCoefficient,aPrime)*specularReflection;
+}
+                   
+                      
+                      
 vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
 {
     // DUMMY RESULT: OUTPUT RAY DIRECTION AS-IS
@@ -120,10 +141,10 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     
     // SCENE
     sSphere sphere;
-    initSphere(sphere, vec3(0.0, 0.0, -4.0), vec4(0.0,0.0,1.0,1.0), 0.5);
+    initSphere(sphere, vec3(0.0, 0.0, -4.0), vec4(0.0,0.0,1.0,1.0), 0.8);
     
     pLight light;
-    initPointLight(light, vec3(4.0,10.0,4.0), vec4(1.0,1.0,1.0,1.0), 100.0);
+    initPointLight(light, vec3(4.0,16.0,4.0), vec4(1.0,1.0,1.0,1.0), 200.0);
     
     vec3 dp;
     dp.xy = rayDirection.xy - sphere.center.xy;
@@ -150,20 +171,41 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
         float diffuseCoefficient = dot(normal,l);
         diffuseCoefficient = max(0.0,diffuseCoefficient);
         float d = length(light.center.xzy - position); 
-        float attenuatedIntensity = 1.0/(1.0+(d/light.intensity)+(pow(d,2.0)/pow(light.intensity,2.0)));
+        float attenuatedIntensity = 1.0/(1.0+(d/light.intensity)+(pow(d,4.0)/pow(light.intensity,2.0)));
         float diffuseIntensity = attenuatedIntensity*diffuseCoefficient;
         sphere.color = vec4(normal * 0.5 + 0.5, 1.0);
-        vec4 sceneColor = diffuseIntensity*light.color*sphere.color;
+        vec4 sceneColor = diffuseIntensity*sphere.color;
+        rayOrigin.xyz = vec3(2.0,3.0,-1.0);
         vec3 v = normalize(rayOrigin.xyz - position);
         vec3 reflectedLight = reflect(-l,normal);
         float specularCoefficient =dot(v,reflectedLight);
         specularCoefficient =max(0.0,dot(v,reflectedLight));
-        vec4 specularReflection = vec4(0.0, 0.0, 1.0, 1.0);
-        vec4 temp = pow(specularCoefficient,256.0)*specularReflection; 
+        vec4 specularReflection = vec4(1.0, 0.28, 0.0, 2.0);
+        vec4 reflectColor = pow(specularCoefficient,64.0)*specularReflection; 
+        vec3 h = normalize(l+v);
+        float aPrime = 4.0*64.0;
+        float blinnPhongCoefficient =dot(normal,h);
+        blinnPhongCoefficient =max(0.0,dot(normal,h));
+        reflectColor = pow(blinnPhongCoefficient,aPrime)*specularReflection; 
+        vec4 phongReflect = phongReflectance(vec3(12.0,-10.0,6.0),position,l,normal,vec4(1.0, 0.0, 0.5, 1.0),32.0);
+        vec4 phongReflect2 = phongReflectance(vec3(-8.0,-25.0,-5.0),position,l,normal,vec4(0.0, 1.0, 0.2, 1.0),64.0);
+        vec4 phongReflect3 = phongReflectance(vec3(-14.0,0.0,3.0),position,l,normal,vec4(0.5, 0.0, 1.0, 1.0),256.0);
         
-        vec4 ambientColor = vec4(0.0, 0.0, 0.0, 1.0);
         
-        //return vec4(temp);
+       
+        vec4 ambientColor = vec4(0.1, 0.42, 0.7, 1.0);
+        float ambientIntensity = 0.0;
+        int index = 4;
+        vec4 reflectArray[4]= vec4[4](reflectColor,phongReflect,phongReflect2,phongReflect3);
+        vec4 a = vec4(sceneColor+reflectArray[0])+(sceneColor+reflectArray[1]);
+        a = a + (sceneColor+reflectArray[2])+(sceneColor+reflectArray[3]);
+        vec4 phongColor = ambientIntensity*ambientColor+(a)
+						  *light.color;
+        
+        //phongColor = ambientIntensity*ambientColor+(sceneColor*2.0+reflectColor)*light.color;
+        //return vec4(ambientColor);
+        return vec4(phongColor);
+        //return vec4(reflectColor);
         //return vec4(pow(specularCoefficient,4.0),pow(specularCoefficient,4.0),pow(specularCoefficient,4.0), 1.0);
         //return vec4(diffuseCoefficient, diffuseCoefficient, diffuseCoefficient, 1.0);
         //return vec4( diffuseIntensity,  diffuseIntensity,  diffuseIntensity, 1.0);
@@ -173,9 +215,10 @@ vec4 calcColor(in vec4 rayDirection, in vec4 rayOrigin)
     }
    
 	// BACKGROUND
-	const vec3 warm = vec3(0.8, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
-	return vec4(0.5);
+	const vec3 warm = vec3(0.55, 0.4, 0.2), cool = vec3(0.2, 0.4, 0.8);
+	return vec4(mix(warm, cool, rayDirection.y), 1.0);
 }
+
 
 // mainImage: process the current pixel (exactly one call per pixel)
 //    fragColor: output final color for current pixel
