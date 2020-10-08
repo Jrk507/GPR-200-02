@@ -208,7 +208,7 @@ sScalar lambertShading(in sViewport vp,in sScalar time)
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
-color4 calcColor(in sViewport vp, in sRay ray, in sScalar time, in sCoord resolution)
+color4 calcColor(in sViewport vp, in sRay ray, in sScalar time, in sCoord resolution, in sampler2D texOne, in sampler2D texTwo, in samplerCube cube)
 {
     // test inputs
 //    return color4(ray.direction.xyz == vp.viewportPoint.xyz); // pass
@@ -222,13 +222,13 @@ color4 calcColor(in sViewport vp, in sRay ray, in sScalar time, in sCoord resolu
     //sampler2D tex = iChannel0;
     //sCoord loc = vp.uv; //relative to display
     sCoord px = vp.pixelCoord;//sets px to pixelCoord
-    sCoord res =  iChannelResolution[0].xy ;//sets rres to iChannelResolution 
+    sCoord res =   resolution ;//sets rres to iChannel 0
     sCoord loc = px / res; //relative to input
     sScalar ratio = res.y * vp.resolutionInv.y;//sets texture image ratio
     loc = loc * ratio + 1.0 ; //alter zoom
     //return color4(texture1);
-    color4 texture1 = texture(iChannel0, loc);//color1
-    color4 texture2 = texture(iChannel1, loc);//color2
+    color4 texture1 = texture(texOne, loc);//color1
+    color4 texture2 = texture(texTwo, loc);//color2
     color4 transition = crossFade(texture1, texture2, time);//Calls the crossFade function and sets it equal to transition
     //return transition;
    
@@ -237,7 +237,7 @@ color4 calcColor(in sViewport vp, in sRay ray, in sScalar time, in sCoord resolu
     
     sScalar diffuseIntensity = lambertShading(vp,time);//calls lambertShading function
     color4 imageColor = texture1 * diffuseIntensity ;//Places the lambertshading light into the texture image
-    return color4(imageColor);
+    //return color4(imageColor);
    
     //return vec4(diffuseCoefficient, diffuseCoefficient, diffuseCoefficient, 1.0);
     //return color4(diffuseIntensity, diffuseIntensity, diffuseIntensity, 1.0);
@@ -260,7 +260,7 @@ color4 calcColor(in sViewport vp, in sRay ray, in sScalar time, in sCoord resolu
     0.0,1.0,0.0,
     -sin(time),0.0,cos(time));
     cubeLoc =( m * cubeLoc);//multiples cubeLoc and rotation matric
-    //return texture(iChannel2, cubeLoc);
+    return texture(cube, cubeLoc);
 	
 
 }
@@ -289,11 +289,10 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     
     //Resolution
     sCoord res = iChannelResolution[0].xy;
-    
  
     // render
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
-    fragColor += calcColor(vp, ray, time,res);
+    fragColor += calcColor(vp, ray, time,res, iChannel0, iChannel1, iChannel2);
     //fragColor = vec4(__VERSION__>=300); // TROUBLESHOOTING
 }
