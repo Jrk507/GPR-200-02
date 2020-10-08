@@ -1,4 +1,5 @@
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+// Edited by Jason Kmieciak & Nicholas Sanguine
 
 //------------------------------------------------------------
 // TYPE ALIASES & UTILITY FUNCTIONS
@@ -29,7 +30,6 @@
 // color4: alias for RGBA color, which is non-spatial
 // 	(this is non-spatial so neither a point nor vector)
 #define color4 vec4
-
 
 // asPoint: promote a 3D vector into a 4D vector 
 //	representing a point in space (w=1)
@@ -174,11 +174,11 @@ float pow4(in float a)
     a *= a;	// original a^4
    	return a;
 }
-
-color4 crossFade(in color4 texture1, in color4 texture2)
+//Code Reference "wipe_cross " by tejas : https://www.shadertoy.com/view/4ddXzX
+color4 crossFade(in color4 texture1, in color4 texture2,in sScalar time)
 {
-    sScalar time = abs(sin(iTime));
-    color4 transition = mix(texture1,texture2,time);
+    sScalar transitionTime = abs(sin(time));//sets iTime to sin and absolute it so it goes from 0 to 1
+    color4 transition = mix(texture1,texture2,transitionTime);//mixes both textures together in terms of time
     return transition;
 }
 vec2 distortion(in sCoord px, in float intensity)
@@ -191,11 +191,24 @@ vec2 distortion(in sCoord px, in float intensity)
    return (px);//final alteration of coordinate // if you add or subtract in the parenthesis it picks up or puts image down
 // All multiplication outside of the parenthesis continues to tighten or widen the distortion but that negates the purpose of intensity
 }
+sScalar lambertShading(in sViewport vp,in sScalar time)
+{
+    sBasis normal = normalize(sBasis(vp.viewportPoint.xy, 1.0));//sets unit normal vector
+    sBasis lightPos = sBasis(0.0,-1.0,10.0)+ vec3(25.0,25.0,0.0) * vec3(sin(time/4.0),sin(time/4.0),0.0);//sets light postion
+    sBasis surfacePos = sBasis(vp.viewportPoint.xyz);//sets texture surface position
+    sScalar d = length(lightPos - surfacePos);// distance between the light's center and the surface point
+    sBasis l = (lightPos - surfacePos)/d;//Calculates the light vector
+    sScalar diffuseCoefficient = dot(normal,l);//diffuse coeffient found by doing the dot product of unit light vector and unit surface normal.
+    diffuseCoefficient = max(0.0,diffuseCoefficient);//clamps the diffuse coefficient
+    sScalar attenuatedIntensity = 1.0/(1.0+(d/400.0)+(pow4(d)/(400.0 * 400.0)));//sets the attenuatedIntensity using common attenuated function
+    sScalar diffuseIntensity = attenuatedIntensity*diffuseCoefficient;//sets diffuse intensity for the texture image
+    return diffuseIntensity;
+}
 
 // calcColor: calculate the color of current pixel
 //	  vp:  input viewport info
 //	  ray: input ray info
-color4 calcColor(in sViewport vp, in sRay ray)
+color4 calcColor(in sViewport vp, in sRay ray, in sScalar time, in sCoord resolution, in sampler2D texOne, in sampler2D texTwo, in samplerCube cube)
 {
     // test inputs
 //    return color4(ray.direction.xyz == vp.viewportPoint.xyz); // pass
@@ -208,33 +221,26 @@ color4 calcColor(in sViewport vp, in sRay ray)
     // textures
     //sampler2D tex = iChannel0;
     //sCoord loc = vp.uv; //relative to display
-    sCoord px = vp.pixelCoord;
-    sCoord res = iChannelResolution[0].xy ;
+    sCoord px = vp.pixelCoord;//sets px to pixelCoord
+    sCoord res =  texOne.xy ;//sets rres to iChannel 0
     sCoord loc = px / res; //relative to input
-    sScalar ratio = res.y * vp.resolutionInv.y;
+    sScalar ratio = res.y * vp.resolutionInv.y;//sets texture image ratio
     loc = loc * ratio + 1.0 ; //alter zoom
-    color4 texture1 = texture(iChannel0, loc);//color
-    color4 texture2 = texture(iChannel1, loc);
-    color4 transition = crossFade(texture1, texture2);
-    
+    //return color4(texture1);
+    color4 texture1 = texture(texOne, loc);//color1
+    color4 texture2 = texture(texTwo, loc);//color2
+    color4 transition = crossFade(texture1, texture2, time);//Calls the crossFade function and sets it equal to transition
+    //return transition;
    
-    sBasis normal = normalize(vec3(vp.viewportPoint.xy, 1.0));
-    sBasis lightPos = sBasis(0.0,-1.0,10.0)+ vec3(25.0,25.0,0.0) * vec3(sin(iTime/4.0),sin(iTime/4.0),0.0);
-    sBasis surfacePos = sBasis(vp.viewportPoint.xyz);
-    sScalar d = length(lightPos - surfacePos);
-    sBasis l = normalize(lightPos - surfacePos);
-    sScalar diffuseCoefficient = dot(normal,l);
-    diffuseCoefficient = max(0.0,diffuseCoefficient);
-    sScalar attenuatedIntensity = 1.0/(1.0+(d/400.0)+(pow4(d)/(400.0 * 400.0)));
-    sScalar diffuseIntensity = attenuatedIntensity*diffuseCoefficient;	
+    sCoord distorted = distortion(loc, 3.0);//calls the distortion function
+    //return vec4(texture(iChannel0, distorted));//DISTORTION
     
-    color4 imageColor = texture1 * diffuseIntensity ;
-    sCoord distorted = distortion(loc, 3.0);
-    return vec4(texture(iChannel0, distorted));//DISTORTION
-    //return color4(imageColor);
+    sScalar diffuseIntensity = lambertShading(vp,time);//calls lambertShading function
+    color4 imageColor = texture1 * diffuseIntensity ;//Places the lambertshading light into the texture image
+    return color4(imageColor);
+   
     //return vec4(diffuseCoefficient, diffuseCoefficient, diffuseCoefficient, 1.0);
     //return color4(diffuseIntensity, diffuseIntensity, diffuseIntensity, 1.0);
-    //return transition;
     //return color4(texture2);// greyScale, one channel
     //testing for shading
     //return vp.viewportPoint;
@@ -244,22 +250,18 @@ color4 calcColor(in sViewport vp, in sRay ray)
       //  normalize(vec3(vp.viewportPoint.xy, 1.0)),
       // 1.0);
 
-   
-
     //Cube map
     // sampler type: 'samplerCube'
-    /*
-    vec3 cubeLoc = ray.direction.xyz;
-    sScalar time = iTime;
-    mat3 m = mat3(
+    //vec3 cubeLoc = ray.direction.xyz*vec3(distorted, 0.0);
+    ray.direction.xy = ray.direction.xy * distorted;//sets ray direction xy with the distortion effect
+    vec3 cubeLoc = ray.direction.xyz;//sets ray direction to variable cubeLoc
+    mat3 m = mat3(//sets rotation matrix in terms of time
     cos(time),0.0,sin(time),
     0.0,1.0,0.0,
     -sin(time),0.0,cos(time));
-        
-    //rotation matrix
-    cubeLoc = m * cubeLoc;
-    return texture(iChannel2, cubeLoc);
-	*/
+    cubeLoc =( m * cubeLoc);//multiples cubeLoc and rotation matric
+    //return texture(cube, cubeLoc);
+	
 
 }
 
@@ -282,10 +284,15 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     // ray
     sRay ray;
     
+    //iTime
+    sScalar time = iTime;
+    
+    //Resolution
+    sCoord res = iChannelResolution[0].xy;
+ 
     // render
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
-    fragColor += calcColor(vp, ray);
+    fragColor += calcColor(vp, ray, time,res, iChannel0, iChannel1, iChannel2);
     //fragColor = vec4(__VERSION__>=300); // TROUBLESHOOTING
 }
-
