@@ -183,12 +183,13 @@ color4 crossFade(in color4 texture1, in color4 texture2)
 }
 vec2 distortion(in sCoord px, in float intensity)
 {
-   float theta  = atan(px.y, px.x);
-   float radius = length(px);
-   radius = pow(radius, intensity);
-   px.x = radius * cos(theta);
-   px.y = radius * sin(theta);
-   return 0.5 * (px + 1.0);
+   float theta  = atan(px.y, px.x);//y over x for the returned fraction in the -π/2 , π/2 range
+   float radius = length(px); //thinking in circles we need a radius from the passed position
+   radius = pow(radius, intensity);//strength of distortion on the radius applied here
+   px.x = radius * cos(theta);//alter x coord different trig functions change it greatly
+   px.y = radius * tan(theta);//alter y coord
+   return (px);//final alteration of coordinate // if you add or subtract in the parenthesis it picks up or puts image down
+// All multiplication outside of the parenthesis continues to tighten or widen the distortion but that negates the purpose of intensity
 }
 
 // calcColor: calculate the color of current pixel
