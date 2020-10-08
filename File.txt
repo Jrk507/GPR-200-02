@@ -181,7 +181,7 @@ color4 crossFade(in color4 texture1, in color4 texture2)
     color4 transition = mix(texture1,texture2,time);
     return transition;
 }
-vec2 distortion(in sCoord px, in float intensity)//using barrel / pincushion
+vec2 distortion(in sCoord px, in float intensity)
 {
    float theta  = atan(px.y, px.x);
    float radius = length(px);
@@ -189,7 +189,6 @@ vec2 distortion(in sCoord px, in float intensity)//using barrel / pincushion
    px.x = radius * cos(theta);
    px.y = radius * sin(theta);
    return 0.5 * (px + 1.0);
- //r_d(k * r^2_d) r_d is the distance from center and k is the intensity
 }
 
 // calcColor: calculate the color of current pixel
@@ -229,8 +228,8 @@ color4 calcColor(in sViewport vp, in sRay ray)
     sScalar diffuseIntensity = attenuatedIntensity*diffuseCoefficient;	
     
     color4 imageColor = texture1 * diffuseIntensity ;
-    vec2 distorted = distortion (vp.pixelCoord, 3.0);
-    
+    sCoord distorted = distortion(loc, 3.0);
+    return vec4(texture(iChannel0, distorted));//DISTORTION
     //return color4(imageColor);
     //return vec4(diffuseCoefficient, diffuseCoefficient, diffuseCoefficient, 1.0);
     //return color4(diffuseIntensity, diffuseIntensity, diffuseIntensity, 1.0);
