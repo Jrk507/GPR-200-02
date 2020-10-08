@@ -289,4 +289,8 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
     fragColor += calcColor(vp, ray);
     //fragColor = vec4(__VERSION__>=300); // TROUBLESHOOTING
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> branch-5
