@@ -1,5 +1,5 @@
 vec2 mainSound( float time )
 {
-    // A 440 Hz wave that attenuates quickly overt time
-    return vec2( cos(2.2831*95.0*time)*tan(-3.0*time) + sin(3.1654 * 30.0* time) * cos(-9.0*time));
+    // A 70 Hz wave and 35 Hz wave pulsating 
+    return vec2( cos(3.1654*70.0*time)*tan(1.0*time) + sin(3.1654 * 35.0* time) * cos(0.25*time));
 }
