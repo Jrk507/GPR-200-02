@@ -17,14 +17,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     float blur = 10.0;
     /*
     color += texture(iChannel0,uv)*4.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(-1,0.0) )*2.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(1,0.0) )*2.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(0.0,-1.0))*2.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(0.0,1.0))*2.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(1.0,1.0))*1.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(-1.0,1.0))*1.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(-1.0,1.0))*1.0;
-    color += texture(iChannel0,uv+fragCoordScale*vec2(-1.0,-1.0))*1.0;
+    color += texture(iChannel0,scalar*vec2(-1,0.0) )*2.0;
+    color += texture(iChannel0,scalar*vec2(1,0.0) )*2.0;
+    color += texture(iChannel0,scalar*vec2(0.0,-1.0))*2.0;
+    color += texture(iChannel0,scalar*vec2(0.0,1.0))*2.0;
+    color += texture(iChannel0,scalar*vec2(1.0,1.0))*1.0;
+    color += texture(iChannel0,scalar*vec2(-1.0,1.0))*1.0;
+    color += texture(iChannel0,scalar*vec2(-1.0,1.0))*1.0;
+    color += texture(iChannel0,scalar*vec2(-1.0,-1.0))*1.0;
     color /= 16.0;
    */
      color += texture(iChannel0,uv)*41.0;
