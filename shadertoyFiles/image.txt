@@ -7,42 +7,23 @@
 // mainImage: process the current pixel (exactly one call per pixel)
 //    fragColor: output final color for current pixel
 //    fragCoord: input location of current pixel in image (in pixels)
-vec4 mixer(in vec4 tex1, in vec4 tex2 , in sScalar time)
-{
- return vec4(mix(tex2,tex1,cos(time)));//alters light scale of the entire image in relation to time
-}
-vec4 add(in vec4 tex1, in vec4 tex2)
-{
- return vec4(tex1 + tex2);//slightly brings colorations out more
-}
-vec4 multiply(in vec4 tex1, in vec4 tex2)
-{
- return vec4(tex2 * tex1); //melds the textures together into interesting colorations    
-}
-vec4 screen(in vec4 tex1, in vec4 tex2)
-{
- return vec4(1.0- (1.0 - tex1) * (1.0-tex2));
-}
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     // setup
     
     //texture space : [0 to 1)
     //if texture is 100x100px, resInv = 0.01 or the pixel size in our texture space
-    sDCoord resInv = 1.0/iChannelResolution[0].xy;
-    sCoord uvUpRightCorner = (fragCoord + 0.5) * resInv;
     // test UV for input image
-    vec2 uv = fragCoord / iChannelResolution[0].xy;
+    sDCoord uv = fragCoord / iChannelResolution[0].xy;//sets xy resolution of the texture we are looking at
     // TESTING
-    if(fract(fragCoord.y) == 0.5);
-     fragColor = vec4(1.0);
-    vec4 tex1 = texture(iChannel0, uv);
-    vec4 tex2 = texture(iChannel1,uv);
-//  DISPLAYS
-      //fragColor = tex2;//NORMAL DISPLAY
-//    fragColor = mixer(tex1, tex2 ,iTime);//MIX
-//    fragColor = add(tex1, tex2);//ADD
-//    fragColor = multiply(tex1,tex2);//MULTIPLY
-//    fragColor = screen(tex1,tex2);//SCREEN
+    // set iChannel0 to 'Misc/Buffer A' and fetch sample
+    fragColor = texture(iChannel0, uv);
+    color4 tex1 = texture(iChannel0, uv);
+    color4 tex2 = texture(iChannel1,uv);
+//  fragColor = tex2;
+//  fragColor = mix(tex2, tex1,0.5);//tex1 changes the shape of which the layers pile through and tex3 takes the upper section
+//  fragColor = tex1 + tex2;//directly mashes the two textures together in shaping and coloration//ADD
+//	fragColor = tex2 * tex1;//MULTIPLY
+//  fragColor = 1.0- (1.0 - tex1) * (1.0-tex2);//SCREEN
 
 }

@@ -12,22 +12,16 @@
 void mainImage(out vec4 fragColor, in vec2 fragCoord)
 {
     // setup
-    int i;
-    sScalar lum[25];
-   
-    vec2 fragCoordScale = vec2(1.0) / vec2(textureSize(iChannel0,0));
     
+   // sScalar lum[25];
     //texture space : [0 to 1)
     //if texture is 100x100px, resInv = 0.01 or the pixel size in our texture space
-    sDCoord resInv = 1.0/iChannelResolution[0].xy;
-    sCoord uvUpRightCorner = (fragCoord + 0.5) * resInv;
     // test UV for input image
-    vec2 uv = fragCoord / iChannelResolution[0].xy;
     // TESTING
     //if(fract(fragCoord.y) == 0.5);
      //fragColor = vec4(1.0);
     // set iChannel0 to 'Misc/Buffer A' and fetch sample
-    color4 color = texture(iChannel0, uv);
+    /*
     for(i = 0; i < 25; i++)
     {
         vec2 tc = (2.0 * fragCoord.xy + 3.5 * vec2(i % 5-2, i /5-2));
@@ -35,7 +29,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         lum[i] = col.r*0.3 + col.g*0.59 + col.b*0.11;
         //lum[i] = dot(col, vec3(0.3, 0.59, 0.11));
     }
- 
+ 	*/
+   
     /*
     float kernelluminance = (
         (1.0 * (lum[0] + lum[4] +lum[20] + lum[24])) +
@@ -47,7 +42,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
         (41.0 * lum[12]))/273.0;
     */
     //float exposure = sqrt(8.0 / (kernelluminance + 0.25));
-    fragColor = lum[12]*lum[12]*lum[12]*lum[12]*color;
-    // fragColor = color4(1.0 - exp2(-color.xyz * exposure), 1.0);
+    sDCoord uv = fragCoord / iChannelResolution[0].xy;//sets xy resolution of the texture we are looking at
+    color4 color = texture(iChannel0, uv);//sets uv coord of the screen and takes the color of iChannel0 texture
+    sBasis col = texture(iChannel0,uv).rgb;//sets uv coord of the screen and takes the color of iChannel0 texture and only takes the rgb factors
+    sScalar lum = col.r*0.3 + col.g*0.59 + col.b*0.11;//sets col rgb coords equal to the perfect white for eyes
+    fragColor = lum*lum*lum*lum*color;//sets color multiplied by lumance to the fourth power
+    // fragColor = color4(1.0 - exp2(-color.xyz * lum), 1.0);
 
 }

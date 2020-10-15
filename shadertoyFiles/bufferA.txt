@@ -16,7 +16,7 @@ color4 calcColor(in sViewport vp, in sRay ray, in sScalar time, in samplerCube c
     //return color4(vp.ndc, 0.0, 0.0);
     //return asPoint(sBasis(vp.viewportPoint.xy, -vp.viewportPoint.z));
     ray.direction.xy = ray.direction.xy;//sets ray direction xy with the distortion effect
-    vec3 cubeLoc = ray.direction.xyz;//sets ray direction to variable cubeLoc
+    sBasis cubeLoc = ray.direction.xyz;//sets ray direction to variable cubeLoc
     mat3 m = mat3(//sets rotation matrix in terms of time
     cos(time),0.0,sin(time),
     0.0,1.0,0.0,
@@ -51,5 +51,5 @@ void mainImage(out color4 fragColor, in sCoord fragCoord)
     // render
     initViewport(vp, viewportHeight, focalLength, fragCoord, iResolution.xy);
     initRayPersp(ray, eyePosition, vp.viewportPoint.xyz);
-    fragColor += calcColor(vp, ray, time , iChannel1);
+    fragColor += calcColor(vp, ray, time , iChannel1);//calls the cube map for buffer a
 }
