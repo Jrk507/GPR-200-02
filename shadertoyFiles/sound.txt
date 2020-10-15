@@ -1,3 +1,4 @@
+// Authors : Jason Kmieciak & Nicholas Sanguine
 vec2 mainSound( float time )
 {
     // A 170 Hz wave and 150 Hz wave pulsating is the end product 

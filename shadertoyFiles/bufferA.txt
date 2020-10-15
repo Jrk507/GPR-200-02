@@ -1,4 +1,5 @@
 // GLSL STARTER CODE BY DANIEL S. BUCKSTEIN
+// Edited by Jason Kmieciak & Nicholas Sanguine
 //  -> BUFFER A TAB (scene)
 
 //------------------------------------------------------------
