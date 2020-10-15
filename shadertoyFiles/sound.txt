@@ -1,8 +1,8 @@
 vec2 mainSound( float time )
 {
-    // A 70 Hz wave and 35 Hz wave pulsating 
-    float hzOne = 170.0;// __Hz wave
-    float hzTwo = 150.0;// __Hz wave
+    // A 170 Hz wave and 150 Hz wave pulsating is the end product 
+    float hzOne = 170.0;// 170Hz wave
+    float hzTwo = 150.0;// 150Hz wave
     //base formula is just cos(baseMult * Hz * time) making a constant noise
     //by adding math formulas within the function you alter the pulse
     //must be by time otherwise the constant number will maintain the same pitch consistently
