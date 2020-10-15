@@ -24,10 +24,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 //    fragColor = texture(iChannel0, uv);
     vec4 tex1 = texture(iChannel0, uv);
     vec4 tex2 = texture(iChannel1,uv);
-    vec4 tex3 = texture(iChannel2,uv);
-//    fragColor = mix(tex2, tex1,tex3);//tex1 changes the shape of which the layers pile through and tex3 takes the upper section
+      //fragColor = tex2;
+      //fragColor = mix(tex2, tex1,cos(iTime));//tex1 changes the shape of which the layers pile through and tex3 takes the upper section
 //    fragColor = tex1 + tex2;//directly mashes the two textures together in shaping and coloration//ADD
-//    fragColor = tex2 * tex3;//MULTIPLY
+//	    fragColor = tex2 * tex1;//MULTIPLY
     fragColor = 1.0- (1.0 - tex1) * (1.0-tex2);//SCREEN
 
 }
