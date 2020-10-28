@@ -1,0 +1,28 @@
+struct lights
+{
+    vec2 position;
+    vec4 color;
+    float lum;
+    
+};
+    void setLights(out lights light, in vec2 center, float luminance, vec4 color)//initialize our struct lights
+{
+    light.position = center;
+    light.lum = luminance;
+    light.color = color;
+}
+void setLuminance(in lights l)
+{
+
+    l.lum /= 0.2126 * l.color.r + 0.7152 * l.color.g + 0.0722 * l.color.b;
+	l.color *= l.lum;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    lights lightOne;
+    setLights(lightOne, vec2(iResolution.y * (tan(iTime)) / 2.4, 120.0), 55.0, vec4(1.0,0.0,0.75,1.0));
+    setLuminance(lightOne);
+    fragColor = vec4(1.0,0.5,0.65, 1.0);
+    fragColor += lightOne.color;
+}
