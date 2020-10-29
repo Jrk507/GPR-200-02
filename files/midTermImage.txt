@@ -1,8 +1,9 @@
 // Authors : Jason Kmieciak , Nicholas Sanguine
-// Credit : by   : 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	sampler texOne = texture(iChannel0, fragCoord / iResolution.xy);
     sampler texTwo = texture(iChannel1, fragCoord / iResolution.xy);
-    fragColor = mix(texOne, texTwo, 0.05);
+    fragColor = texOne;
+    fragColor = texTwo;
+    fragColor = mix(texOne, texTwo, 0.025);
 }

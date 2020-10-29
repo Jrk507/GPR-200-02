@@ -1,5 +1,4 @@
 // Authors : Jason Kmieciak , Nicholas Sanguine
-// Credit : by   : 
 float merge(sScalar d1, sScalar d2)//combines distance fields
 {
 	return min(d1, d2);
@@ -81,7 +80,7 @@ float shadow(sCoord p, sCoord pos, sScalar radius)
 	// multiply by dl to get the real projected overlap (moved out of loop)
 	// add one radius, before between -radius and + radius
 	// normalize to 1 ( / 2*radius)
-	lf = clamp((lf*dl + radius) / (2.0 * radius), 0.0, 1.0);
+	lf = clamp((lf*dl + radius) * (0.5 * radius), 0.0, 1.0);
 	return lf;
 }
 
@@ -131,7 +130,7 @@ void setLuminance(inout colorRGBA col, sScalar lum)
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
 	sCoord p = fragCoord.xy;
-	sCoord c = iResolution.xy / 2.0;;//center of screen
+	sCoord c = iResolution.xy * 0.5;;//center of screen
 	sScalar dist = sceneDist(p);//passes fragCoord.xy so the function is always in relation to fragCoord
     //Initializing lights
     lights lightOne;
@@ -145,7 +144,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     setLights(lightTwo, sCoord(c.x * tan(iTime), c.y), colorRGBA(1.0,0.4,0.0,1.0), 5.0,105.0);
     setLuminance(lightTwo.color, 0.75);
     //Light Three
-    setLights(lightThree, sCoord(c.x* tan(iTime), 245.0 * -cos(iTime) * 0.75), colorRGBA(1.0,1.0,1.0,1.0), 5.0, 105.0);
+    setLights(lightThree, sCoord(c.x* tan(iTime), 245.0 * -cos(iTime) * 0.75), colorRGBA(0.0,0.0,1.0,1.0), 5.0, 105.0);
     setLuminance(lightThree.color, 0.75);
     //Light Four
     setLights(lightFour, sCoord(c * -tan(iTime) ), colorRGBA(1.0,0.35,1.0,1.0), 5.0, 105.0);
@@ -157,8 +156,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     col+= drawLight(p, lightTwo, dist);
     col+= drawLight(p, lightThree, dist);
     col+= drawLight(p, lightFour, dist);
-    col = mix(col, colorRGBA(1.0, 0.4, 0.0, 1.0), fillMask(dist));//if you remove this all objects still exist
-    vec4 texOne = (texture(iChannel0, fragCoord / iResolution.xy));
-	fragColor = mix(col,texOne, .05);;
+    col = mix(col, colorRGBA(1.0, 1.0, 1.0, 1.0), fillMask(dist));//if you remove this all objects still exist
+	fragColor = col;
 }
 

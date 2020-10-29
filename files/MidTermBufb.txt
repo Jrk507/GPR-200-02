@@ -2,13 +2,13 @@
 // Credit : by  TekF : https://www.shadertoy.com/view/XsyGzz
 void mainImage( out colorRGBA fragColor, in sCoord fragCoord )
 {
-    fragColor = texture(iChannel0, (fragCoord*0.98 + iResolution.xy*0.01 + (fragCoord-iResolution.xy/2.0).yx*vec2(-.03,.03)) / iResolution.xy);
-    sampler f = (texture(iChannel1, fragCoord / iResolution.xy));
-    sScalar t = iTime*.5;
+    fragColor = texture(iChannel0, (fragCoord* 0.98 + iResolution.xy*0.01 + (fragCoord-iResolution.xy*0.5).yx*vec2(-.03,.03)) / iResolution.xy);
+    sampler f = (texture(iChannel1, fragCoord / iResolution.xy));//textures iChannel 0  to this buffer 
+    sScalar t = iTime * 0.5;//tick rate
 
-    colorRGBA col = vec4(sin(t*vec3(13,11,17)),1);
-    sScalar idx = .0+1.0*smoothstep( 6.0, 20.0, length( fragCoord - cos(vec2(11,13)*t)*95.0 - iResolution.xy/2.0 ) );
-    
-    colorRGBA fran = mix( col, fragColor, idx);
-    fragColor = mix(fran,f, col/4.0);
+    colorRGBA col = vec4(sin(t*vec3(13,11,17)),1);//changes color
+    sScalar idx = .0+1.0 *smoothstep( 6.0, 20.0, length( fragCoord - cos(vec2(11,13) *t) *95.0 - iResolution.xy *0.5 ) );//changes the pattern the color squirl follows
+
+    colorRGBA fran = mix( col, fragColor, idx);//mixes color , pattern and iChannel0
+    fragColor = mix(fran,f, col*0.25);// mix fran , iChannel1 and color with a 0.25 gradient
 }
