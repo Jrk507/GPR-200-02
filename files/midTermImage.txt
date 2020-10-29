@@ -1,18 +1,18 @@
-float fillMask(float dist)
+float merge(float d1, float d2)//combines distance fields
 {
-	return clamp(-dist, 0.0, 1.0);
+	return min(d1, d2);
 }
 
-vec2 translate(vec2 p, vec2 t)
+vec2 translate(vec2 p, vec2 t)//used to return a starting size for the Distance field equations
 {
 	return p - t;
 }
 
-float merge(float d1, float d2)
-{
-	return min(d1, d2);
-}
-/*Distance Fields*/
+
+//////////////////////////////
+// Distance field functions //
+//////////////////////////////
+
 float circleDist(vec2 p, float radius)
 {
 	return length(p) - radius;
@@ -26,28 +26,23 @@ float boxDist(vec2 p, vec2 size, float radius)
   	return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - radius;
 }
 
-/*Scene*/
+float fillMask(float dist)//Make 
+{
+	return clamp(-dist, 0.0, 1.0);
+}
+
 float sceneDist(vec2 p)
 {
-	float b1 = boxDist(	translate(p, vec2(iMouse.xy)), 
-                       vec2(120, 190), 	155.0);
-	float c1 = circleDist(	translate(p, vec2(50, 100)), 	30.0);
-	float a = merge(b1, c1);
+	float b5 = boxDist(	translate(p, vec2(iMouse.xy)),vec2(45, 45), 10.0);
+	float c4 = circleDist(translate(p, vec2(50, 100)), 30.0);
+	float a = merge(b5, c4);
 	
-	float m = a;
+	float m = (a);
 	
 	return m;
 }
-/*Lighting and Shading*/
-struct lights
-{
-    vec2 position;
-    vec4 color;
-    float lum;
-    float range;
-    float radius;
-    
-};
+
+
 float shadow(vec2 p, vec2 pos, float radius)
 {
 	vec2 dir = normalize(pos - p);
@@ -75,20 +70,34 @@ float shadow(vec2 p, vec2 pos, float radius)
 		
 		// move ahead
 		dt += max(1.0, abs(sd));
-		if (dt > dl) break;
+		if (dt > dl) return 1.0;
 	}
 
 	// multiply by dl to get the real projected overlap (moved out of loop)
 	// add one radius, before between -radius and + radius
 	// normalize to 1 ( / 2*radius)
 	lf = clamp((lf*dl + radius) / (2.0 * radius), 0.0, 1.0);
-	lf = smoothstep(0.0, 1.0, lf);
+//	lf = smoothstep(0.0, 1.0, lf);
 	return lf;
 }
 
 
-
-vec4 drawLight(vec2 p, lights l, float dist, float range)
+struct lights
+{
+    vec2 position;
+    vec4 color;
+    float range;
+    float radius;
+    
+};
+    void setLights(inout lights light, in vec2 center, vec4 color,float radius, float range)//initialize our struct lights
+{
+    light.position = center;
+    light.color = color;
+    light.radius = radius;
+    light.range = range;
+}
+vec4 drawLight(vec2 p, lights l ,float dist)
 {
 	// distance to light
 	float ld = length(p - l.position);
@@ -104,32 +113,31 @@ vec4 drawLight(vec2 p, lights l, float dist, float range)
 	return (shad * fall + source) * l.color;
 }
 
-////////////////////////////////////////////////////////////////////////////////
 
-    void setLights(out lights light, in vec2 center, float luminance, vec4 color,float radius)//initialize our struct lights
+float luminance(vec4 col)
 {
-    light.position = center;
-    light.lum = luminance;
-    light.color = color;
-    light.radius = radius;
+	return 0.2126 * col.r + 0.7152 * col.g + 0.0722 * col.b;
 }
-void setLuminance(in lights l)
-{
 
-    l.lum /= 0.2126 * l.color.r + 0.7152 * l.color.g + 0.0722 * l.color.b;
-	l.color *= l.lum;
+
+void setLuminance(inout vec4 col, float lum)
+{
+	lum /= luminance(col);
+	col *= lum;
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
-    vec2 p = fragCoord.xy;
-	vec2 c = iResolution.xy / 2.0;
-    float dist = sceneDist(p);
+	vec2 p = fragCoord.xy;
+	vec2 c = iResolution.xy / 2.0;;
+	float dist = sceneDist(p);
     lights lightOne;
-    setLights(lightOne, vec2(iResolution.y * (tan(iTime)) / 2.4, 50.0), 25.0, vec4(1.0,0.0,0.75,1.0), 35.0);
-    setLuminance(lightOne);
-    vec4 col = drawLight(p, lightOne, dist, 12.0);
+    setLights(lightOne, vec2(256,144), vec4(0.55, 0.3, 0.5, 1.0), 5.0, 105.0);
+    setLuminance(lightOne.color, 0.75);
+	// gradient
+	vec4 col = vec4(0.5, 0.5, 0.5, 1.0);
+	// light
+    col+= drawLight(p, lightOne, dist);
     col = mix(col, vec4(1.0, 0.4, 0.0, 1.0), fillMask(dist));
-    col *= vec4(0.5, 0.5, 0.5, 1.0) * (1.0 - length(c - p)/iResolution.x);
     fragColor = col;
 }
