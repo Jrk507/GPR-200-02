@@ -1,0 +1,164 @@
+// Authors : Jason Kmieciak , Nicholas Sanguine
+// Credit : by   : 
+float merge(sScalar d1, sScalar d2)//combines distance fields
+{
+	return min(d1, d2);
+}
+
+vec2 translate(sCoord p, sCoord t)//used to return a starting size for the Distance field equations
+{
+	return p - t;
+}
+
+
+
+float circleDist(sCoord p, sScalar radius)//makes empty masks
+{
+	return length(p) - radius;
+}
+
+
+float boxDist(vec2 p, sCoord size, sScalar radius)
+{
+	size -= vec2(radius);
+	sCoord d = abs(p) - size;
+  	return min(max(d.x, d.y), 0.0) + length(max(d, 0.0)) - radius;
+}
+
+
+float fillMask(sScalar dist)//Fills the empty masks 
+{
+	return clamp(-dist, 0.0, 1.0);
+}
+
+float sceneDist(vec2 p)
+{
+    //Drawing our circle masks
+    float circleOne = circleDist(translate(p, vec2(40, 245)), 30.0);
+	float circleTwo = circleDist(translate(p, vec2(40, 50)), 30.0);
+    float circleThree = circleDist(translate(p, vec2(472, 245)), 30.0);
+    float circleFour = circleDist(translate(p, vec2(472, 50)), 30.0);
+    //Drawing our interactive box
+    float interactiveBox = boxDist(	translate(p, vec2(iMouse.xy)),vec2(35, 25), 25.0);
+    float nonInteractiveBox = boxDist(translate(p,vec2(256,144)),vec2 (35,35), 10.0);
+    //merge information together for masks to draw into the picture
+	sScalar m = merge(interactiveBox, circleOne);
+    m = merge(m, nonInteractiveBox);
+	m = merge(m, circleTwo);
+	m = merge(m,circleThree);
+	m = merge(m,circleFour);
+	return m;
+}
+
+
+float shadow(sCoord p, sCoord pos, sScalar radius)
+{
+	vec2 dir = normalize(pos - p);
+	float dl = length(p - pos);
+	
+	// fraction of light visible, starts at one radius (second half added in the end);
+	sScalar lf = radius * dl;
+	
+	// distance traveled
+	sScalar dt = 0.01;
+
+	for (int i = 0; i < 64; ++i)
+	{				
+		// distance to scene at current position
+		float sd = sceneDist(p + dir * dt);
+
+        // early out when this ray is guaranteed to be full shadow
+        if (sd < -radius) 
+            return 0.0;
+		// width of cone-overlap at light
+		// 0 in center, so 50% overlap
+		lf = min(lf, sd / dt);
+		// move ahead
+		dt += max(1.0, abs(sd));
+		if (dt > dl) return 1.0;
+	}
+
+	// multiply by dl to get the real projected overlap (moved out of loop)
+	// add one radius, before between -radius and + radius
+	// normalize to 1 ( / 2*radius)
+	lf = clamp((lf*dl + radius) / (2.0 * radius), 0.0, 1.0);
+	return lf;
+}
+
+
+struct lights
+{
+    sCoord position;
+    colorRGBA color;
+    sScalar range;
+    sScalar radius;
+    
+};
+    void setLights(inout lights light, in sCoord center, colorRGBA color,sScalar radius, sScalar range)//initialize our struct lights
+{
+    light.position = center;
+    light.color = color;
+    light.radius = radius;
+    light.range = range;
+}
+vec4 drawLight(sCoord p, lights l ,sScalar dist)
+{
+	// distance to light
+	sScalar ld = length(p - l.position);
+	// out of range
+	if (ld > l.range) return vec4(0.0);
+	// shadow and falloff
+	sScalar shad = shadow(p, l.position, l.radius);//casts the shadows
+	sScalar fall = (l.range - ld)/l.range;
+	fall *= fall;//translating to color makes the light a light, not a ball
+	sScalar source = fillMask(circleDist(p - l.position, l.radius));//source draws the circle in the center
+	return (shad * fall + source) * l.color;
+}
+
+
+float luminance(colorRGBA col)
+{
+	return 0.2126 * col.r + 0.7152 * col.g + 0.0722 * col.b;
+}
+
+
+void setLuminance(inout colorRGBA col, sScalar lum)
+{
+	lum /= luminance(col);
+	col *= lum;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+	sCoord p = fragCoord.xy;
+	sCoord c = iResolution.xy / 2.0;;//center of screen
+	sScalar dist = sceneDist(p);//passes fragCoord.xy so the function is always in relation to fragCoord
+    //Initializing lights
+    lights lightOne;
+    lights lightTwo;
+    lights lightThree;
+    lights lightFour;
+    //Light One
+    setLights(lightOne, sCoord(c.x,144.0 *tan(iTime)), colorRGBA(0.55, 0.3, 0.5, 1.0), 5.0, 105.0);
+    setLuminance(lightOne.color, 0.75);
+    //Light Two
+    setLights(lightTwo, sCoord(c.x * tan(iTime), c.y), colorRGBA(1.0,0.4,0.0,1.0), 5.0,105.0);
+    setLuminance(lightTwo.color, 0.75);
+    //Light Three
+    setLights(lightThree, sCoord(c.x* tan(iTime), 245.0 * -cos(iTime) * 0.75), colorRGBA(1.0,1.0,1.0,1.0), 5.0, 105.0);
+    setLuminance(lightThree.color, 0.75);
+    //Light Four
+    setLights(lightFour, sCoord(c * -tan(iTime) ), colorRGBA(1.0,0.35,1.0,1.0), 5.0, 105.0);
+    setLuminance(lightFour.color, 0.75);
+	// background
+	colorRGBA col = colorRGBA(0.5, 0.5, 0.5, 1.0);
+	// draw lights and mix with background
+    col+= drawLight(p, lightOne, dist);
+    col+= drawLight(p, lightTwo, dist);
+    col+= drawLight(p, lightThree, dist);
+    col+= drawLight(p, lightFour, dist);
+    col = mix(col, colorRGBA(1.0, 0.4, 0.0, 1.0), fillMask(dist));//if you remove this all objects still exist
+    vec4 texOne = (texture(iChannel0, fragCoord / iResolution.xy));
+	fragColor = mix(col,texOne, .05);;
+}
+

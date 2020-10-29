@@ -1,0 +1,10 @@
+// Authors : Jason Kmieciak , Nicholas Sanguine
+// Credit : by   : 
+//2D coordinate
+#define sCoord vec2
+//vec4 color
+#define colorRGBA vec4
+//vec4 sample
+#define sampler vec4
+//floats for scaling
+#define sScalar float
