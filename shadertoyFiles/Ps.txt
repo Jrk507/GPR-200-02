@@ -1,22 +1,54 @@
 #version 300 es
+//#version 450
 
-#ifdef GL_ES
-precision highp float;
-#endif
-// VARYING
-//CURRENTLY PER-VERTEX 
-//in vec4 vColor;
-layout (location = 0) out vec4 rtFragColor;
-//PER FRAGMENT
-in vec4 vNormal;
+// MAIN DUTY: PROCESS ATTRIBUTES
+// e.g. 3D position in space
+// e.g. normal
+// e.g. 2D uv: texture coordinate
+layout (location = 0) in vec4 aPosition;
+layout (location = 1) in vec3 aNormal;
+//in vec4 aPosition;
 
+// TRANSFORM UNIFORM
+uniform mat4 uModelMat;
+uniform mat4 uViewMat;
+uniform mat4 uProjMat;
+uniform mat4 uViewProjMat;
+
+//VARYING
+out vec4 vColor;
+out vec3 nNormal;
+out vec3 nPosition;
+out vec3 posCamera;
 void main()
 {
-
-	//PER-VERTEX: input is just final color
-  // rtFragColor = vec4(0.5,0.0,0.25, 1.0);
- //  rtFragColor = vColor;
-   //PER-FRAGMENT WE CALCULATE FINAL COLOR HERE VIA INPUTS
-   vec4 n = normalize(vNormal);
-   rtFragColor = vec4(n.xyz *0.5 + 0.5, 1.0); 
+	//REQUIRED: set this value:
+	//Problem: gl_position is in "clip space"
+	//problem: aPosition is in "object space"
+	//l_Position = aPosition;
+	
+	// position in world space(worng)
+	vec4 pos_world = uModelMat * aPosition;
+	//gl_Position = pos_world;
+	
+	//position in camera-space(also wong)
+	//vec4 pos_camera = uViewMat * uModelMat * aPosition;
+	vec4 pos_camera = uViewMat * pos_world;
+	posCamera = pos_camera.xyz;
+	
+	//postion in clip space (finally)
+	//vec4 pos_clip = uViewProjMat * pos_world; 
+	//vec4 pos_clip = uProjMat * uViewMat * uModelMat* aPosition;
+	vec4 pos_clip = uProjMat * pos_camera;
+	gl_Position = pos_clip;
+	
+	//OPTIONAL: set varying
+	//vColor = vec4(1.0,0.5,0.0,1.0);
+	
+	//DEBUGGING:
+	
+	//PER-VERTEX: calculate and output final color
+	vColor = aPosition;
+	nNormal = aNormal;
+	nPosition = aPosition.xyz;
 }
