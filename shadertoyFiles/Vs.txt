@@ -30,11 +30,7 @@ void main()
 //currently set for vertex
 	vec3 pos_light =vec3(0.5,0.5,0.25);
 	vec3 pos_cam = posCamera;
-<<<<<<< HEAD
     //vColor = vec4(0.5,0.5,0.5,1.0);//base color of the geometry
-=======
-    vColor = vec4(0.5,0.5,0.5,1.0);//base color of the geometry
->>>>>>> origin/lab-7
     vec4 viewPos = uViewMat * uModelMat * aPosition;
     gl_Position = uProjMat * viewPos ;//Without this we have black screen
 	nPosition = aPosition.xyz;//initialize a varying
@@ -50,15 +46,11 @@ void main()
 	vec4 lightColor = vec4(1.0,1.0,1.0, 1.0);
 	//Final Color Lambertian
 	//vColor *= diffuseIntensity * lightColor;
-<<<<<<< HEAD
 	vec4 sceneColor =diffuseIntensity * lightColor;
-=======
->>>>>>> origin/lab-7
 	//Start Phong
 	//Need our view vector
 	vec4 viewNormal = uViewMat * uModelMat * vec4(aNormal, 1.0);
 	vec3 viewVector = (pos_cam - vec3(viewPos));
-<<<<<<< HEAD
 	vec3 reflectedLight = reflect(-viewVector,pos_light);//reflect
 	//vColor = vec4(viewVector);
 	float specularCoefficient = max(0.0,dot(viewVector, reflectedLight));
@@ -69,15 +61,6 @@ void main()
 	vec4 ambientColor = vec4(0.1, 0.9, 0.9, 1.0);//static ambien color
     float ambientIntensity = 0.0;//static ambient intensity
 	vColor = ambientIntensity * ambientColor + vec4(sceneColor+specularIntensity)/4.0;
-=======
-	float reflectedLight = ;//reflect
-	//vColor = vec4(viewVector);
-	float specularCoefficient = max(0.0,dot(viewVector, reflectedLight));
-	
-	float highlightExponent = 16.0;
-	float specularIntensity = pow(specularCoefficient, highlightExponent);
-	vColor += specularIntensity;	
->>>>>>> origin/lab-7
 }
 //PER VERTEX
 //void main()
