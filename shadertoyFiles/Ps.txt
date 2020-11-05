@@ -1,6 +1,6 @@
 #version 300 es
 //#version 450
-
+//Authors: Jason Kmieciak & Nicholas Sanguine
 #ifdef GL_ES
 precision highp float;
 #endif // GL_ES
