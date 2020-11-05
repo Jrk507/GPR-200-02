@@ -15,16 +15,22 @@ uniform mat4 uViewMat;//view space
 uniform mat4 uProjMat;//clip space
 uniform mat4 uViewProjMat;//world space
 
-//VARYING
+//VARYING PER FRAGMENT
 out vec4 vColor;
 out vec3 nNormal;
 out vec3 nPosition;//position our colors start
 out vec3 posCamera;
+//VARYING PER VERTEX
+//in vec4 vColor;
+//in vec3 nNormal;
+//in vec3 nPosition;//position our colors start
+//in vec3 posCamera;
 void main()
 {
 //currently set for vertex
 	vec3 pos_light =vec3(0.5,0.5,0.25);
-    vColor = vec4(0.5,0.5,0.5,1.0);//base color of the geometry
+	vec3 pos_cam = posCamera;
+    //vColor = vec4(0.5,0.5,0.5,1.0);//base color of the geometry
     vec4 viewPos = uViewMat * uModelMat * aPosition;
     gl_Position = uProjMat * viewPos ;//Without this we have black screen
 	nPosition = aPosition.xyz;//initialize a varying
@@ -39,15 +45,28 @@ void main()
 	float diffuseIntensity = diffuseCoefficient * attenuation;
 	vec4 lightColor = vec4(1.0,1.0,1.0, 1.0);
 	//Final Color Lambertian
-	//vColor = diffuseIntensity * lightColor * aPosition;
+	//vColor *= diffuseIntensity * lightColor;
+	vec4 sceneColor =diffuseIntensity * lightColor;
 	//Start Phong
 	//Need our view vector
 	vec4 viewNormal = uViewMat * uModelMat * vec4(aNormal, 1.0);
-	float viewVector =normalize(length(viewPos - viewNormal));
-	float reflectedLight = dist - 2.0 * dot(viewNormal,viewPos);//reflect
+	vec3 viewVector = (pos_cam - vec3(viewPos));
+	vec3 reflectedLight = reflect(-viewVector,pos_light);//reflect
+	//vColor = vec4(viewVector);
 	float specularCoefficient = max(0.0,dot(viewVector, reflectedLight));
-	float highlightExponent = 16.0;
+	vColor += specularCoefficient;
+	float highlightExponent = 4.0;
 	float specularIntensity = pow(specularCoefficient, highlightExponent);
-	vColor += specularIntensity;
-	
+	//vColor += specularIntensity;	
+	vec4 ambientColor = vec4(0.1, 0.9, 0.9, 1.0);//static ambien color
+    float ambientIntensity = 0.0;//static ambient intensity
+	vColor = ambientIntensity * ambientColor + vec4(sceneColor+specularIntensity)/4.0;
 }
+//PER VERTEX
+//void main()
+//{
+	// properties
+  //  vec3 norm = normalize(nNormal);
+    //vec3 viewDir = normalize(posCamera - nPosition);
+	//rtFragColor = vColor;
+//}
