@@ -25,7 +25,8 @@ void main()
 //currently set for vertex
 	vec3 pos_light =vec3(0.5,0.5,0.25);
     vColor = vec4(0.5,0.5,0.5,1.0);//base color of the geometry
-    gl_Position = uProjMat * uViewMat * uModelMat * aPosition;//Without this we have black screen
+    vec4 viewPos = uViewMat * uModelMat * aPosition;
+    gl_Position = uProjMat * viewPos ;//Without this we have black screen
 	nPosition = aPosition.xyz;//initialize a varying
 	//Start of lambert
 	float dist = normalize(length(pos_light - nPosition));//distance between the light and sphere 
@@ -36,16 +37,17 @@ void main()
 	//vColor += attenuation; //returns color(currently in object space)
 	float diffuseCoefficient = max(0.0,dot(nPosition,pos_light));
 	float diffuseIntensity = diffuseCoefficient * attenuation;
-	vec4 lightColor = vec4(1.0,1.0,0.5, 1.0);
-	//vColor += diffuseCoefficient;
-	vColor = diffuseIntensity * lightColor * aPosition;
-	
-	
-	
-	
-	
-	
-	
-	
+	vec4 lightColor = vec4(1.0,1.0,1.0, 1.0);
+	//Final Color Lambertian
+	//vColor = diffuseIntensity * lightColor * aPosition;
+	//Start Phong
+	//Need our view vector
+	vec4 viewNormal = uViewMat * uModelMat * vec4(aNormal, 1.0);
+	float viewVector =normalize(length(viewPos - viewNormal));
+	float reflectedLight = dist - 2.0 * dot(viewNormal,viewPos);//reflect
+	float specularCoefficient = max(0.0,dot(viewVector, reflectedLight));
+	float highlightExponent = 16.0;
+	float specularIntensity = pow(specularCoefficient, highlightExponent);
+	vColor += specularIntensity;
 	
 }
