@@ -1,6 +1,6 @@
 #version 300 es
 //#version 450
-
+//Authors: Jason Kmieciak & Nicholas Sanguine
 // MAIN DUTY: PROCESS ATTRIBUTES
 // e.g. 3D position in space
 // e.g. normal
