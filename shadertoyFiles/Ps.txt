@@ -7,11 +7,16 @@ precision highp float;
 
 layout (location = 0)out vec4 rtFragColor;
 //out vec4 rtFragColor;
-
+//PER FRAGMENT VARYING
 in vec4 vColor;
 in vec3 nNormal;
 in vec3 nPosition;
 in vec3 posCamera;
+//PER VERTEX VARYINGout 
+//vec4 vColor;
+//out vec3 nNormal;
+//out vec3 nPosition;//position our colors start
+//out vec3 posCamera;
 void main()
 {
 	// properties
