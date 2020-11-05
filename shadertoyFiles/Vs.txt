@@ -10,45 +10,28 @@ layout (location = 1) in vec3 aNormal;
 //in vec4 aPosition;
 
 // TRANSFORM UNIFORM
-uniform mat4 uModelMat;
-uniform mat4 uViewMat;
-uniform mat4 uProjMat;
-uniform mat4 uViewProjMat;
+uniform mat4 uModelMat;//object space
+uniform mat4 uViewMat;//view space
+uniform mat4 uProjMat;//clip space
+uniform mat4 uViewProjMat;//world space
 
 //VARYING
 out vec4 vColor;
 out vec3 nNormal;
-out vec3 nPosition;
+out vec3 nPosition;//position our colors start
 out vec3 posCamera;
 void main()
 {
-	//REQUIRED: set this value:
-	//Problem: gl_position is in "clip space"
-	//problem: aPosition is in "object space"
-	//l_Position = aPosition;
+	vec3 pos_light =vec3(1.0,1.0,1.0);
+    vColor = aPosition;//base color of the geometry
+    gl_Position = uProjMat * uViewMat * uModelMat * aPosition;//Without this we have black screen
+	nPosition = aPosition.xyz;//initialize a varying
+	//Start of lambert
+	float dist = normalize(length(pos_light - nPosition));//distance between the light and sphere 
+	float distSQ = dist * dist;
+	float lightIntensity = 1.0;
+	float attenuation = 1.0/((1.0 + dist) / lightIntensity
+		      + distSQ/ (lightIntensity * lightIntensity));
+	vColor += attenuation; //returns color(currently in object space)
 	
-	// position in world space(worng)
-	vec4 pos_world = uModelMat * aPosition;
-	//gl_Position = pos_world;
-	
-	//position in camera-space(also wong)
-	//vec4 pos_camera = uViewMat * uModelMat * aPosition;
-	vec4 pos_camera = uViewMat * pos_world;
-	posCamera = pos_camera.xyz;
-	
-	//postion in clip space (finally)
-	//vec4 pos_clip = uViewProjMat * pos_world; 
-	//vec4 pos_clip = uProjMat * uViewMat * uModelMat* aPosition;
-	vec4 pos_clip = uProjMat * pos_camera;
-	gl_Position = pos_clip;
-	
-	//OPTIONAL: set varying
-	//vColor = vec4(1.0,0.5,0.0,1.0);
-	
-	//DEBUGGING:
-	
-	//PER-VERTEX: calculate and output final color
-	vColor = aPosition;
-	nNormal = aNormal;
-	nPosition = aPosition.xyz;
 }
