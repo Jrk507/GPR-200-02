@@ -11,5 +11,6 @@ layout (location = 0) out vec4 rtFragColor;
 
 void main()
 {
- 	rtFragColor = vNormal;
+//rtFragColor = vNormal+ vec4(1.0,0.5,0.0,1.0)//More distinct coloration for debugging
+ 	rtFragColor = vNormal ;
 }
