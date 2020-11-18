@@ -16,10 +16,10 @@ void main()
 // ux = screen location / screen resolution
 // 2) (something to do with attribute: texture coordinate)
 vec2 uv = vTexcoord;
+//vec2 uv =  gl_FragCoord.xy / uResolution;
 vec4 col = texture(uTex, uv);
 vec4 col2 = texture(uTex2, uv);
-
-//vec2 uv =  gl_FragCoord.xy / uResolution;
+col2 = col2 * 20.0;//multiply  col2 to make it show darker later.
 //rtFragColor = vec4(1.0,0.5,0.0,1.0);
 //rtFragColor = vec4(uv, 0.0,1.0);
 rtFragColor = col * (1.0-col2) ;
