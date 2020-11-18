@@ -4,11 +4,12 @@
 precision highp float;
 #endif //GL_ES
 
+
 in vec4 vNormal;
 
 layout (location = 0) out vec4 rtFragColor;
 
 void main()
 {
- rtFragColor = vNormal;
+ 	rtFragColor = vNormal;
 }

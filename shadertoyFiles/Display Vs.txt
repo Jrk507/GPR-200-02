@@ -6,7 +6,7 @@ out vec2 vTexcoord;
 
 void main()
 {
-gl_Position = aPosition * vec4(0.5, 0.5, 0.5, 1.0);
+gl_Position = aPosition;// * vec4(0.5, 0.5, 0.5, 1.0);
 // gl_Position = aPosition; // ;(
  vTexcoord = aPosition.xy * 0.5 + 0.5;// NDC -> Screen; [-1,1] -> [0,1]
 }
