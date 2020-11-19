@@ -1,16 +1,18 @@
 #version 300 es
-//Authors: Jason Kmieciak & Nicholas Sanguine 
+//Authors: Jason Kmieciak & Nicholas Sanguinev
 #ifdef GL_ES
 precision highp float;
 #endif //GL_ES
 
 
 in vec4 vNormal;
-
+in vec4 vColor;
 layout (location = 0) out vec4 rtFragColor;
 
 void main()
 {
-//rtFragColor = vNormal+ vec4(1.0,0.5,0.0,1.0)//More distinct coloration for debugging
- 	rtFragColor =  vNormal *vec4(100.0);
+rtFragColor = vNormal+ vec4(1.0,0.5,0.0,1.0);//More distinct coloration for debugging
+ 	//rtFragColor =  vec4(0.5) *vec4(100.0);
+ 	//rtFragColor = vec4(0.0,0.5,0.0,0.0) * vec4(100.0); 
+ 	//rtFragColor = vNormal *vec4(100.0) ;
 }

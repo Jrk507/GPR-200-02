@@ -1,5 +1,6 @@
 #version 300 es
-//Authors: Jason Kmieciak & Nicholas Sanguine 
+//Authors: Jason Kmieciak & Nicholas Sanguine
+//Credit Lab 6: Branch Lab-6-https://github.com/Jrk507/GPR-200-02.git
 #ifdef GL_ES
 precision highp float;
 #endif //GL_ES
@@ -11,13 +12,12 @@ uniform sampler2D uTex; // represented by integer (0)
 void main()
 {
 //sampler.uv
-// ux = screen location / screen resolution
+// uv = screen location / screen resolution
 // 2) (something to do with attribute: texture coordinate)
 vec2 uv = vTexcoord;
 vec2 texCoordScale = vec2(1.0);
 vec2 scalar = vTexcoord + texCoordScale;
-//vec2 uv =  gl_FragCoord.xy / uResolution;
-//Gauss blur without matrix
+//5x5 gaussian kernel
 vec4 color = texture(uTex, uv) * 41.0;
 color += texture(uTex,uv)*41.0;
 color += texture(uTex,scalar*vec2(-1,0.0) )*26.0;

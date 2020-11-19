@@ -2,12 +2,15 @@
 //Authors: Jason Kmieciak & Nicholas Sanguine 
 layout (location = 0) in vec4 aPosition;
 layout (location = 1) in vec3 aNormal;
-uniform mat4 uModelmat, uViewMat, UProjMat;
+uniform mat4 uModelmat, uViewMat, uProjMat ;
 out vec4 vNormal;
+out vec4 vColor;
+out vec3 nNormal;
+out vec3 nPosition;//position our colors start
+out vec3 posCamera;
 
 void main()
 {
-	gl_Position = UProjMat * uViewMat * uModelmat * aPosition;
-
+	gl_Position = uProjMat * uViewMat * uModelmat * aPosition;//clip-space
 	vNormal = vec4(aNormal, 0.0);
 }

@@ -1,27 +1,30 @@
 #version 300 es
-//Authors: Jason Kmieciak & Nicholas Sanguine 
+//Authors: Jason Kmieciak & Nicholas Sanguine
+//Credit Lab 6: Branch Lab-6-https://github.com/Jrk507/GPR-200-02.git
 #ifdef GL_ES
 precision highp float;
 #endif //GL_ES
 
 in vec2 vTexcoord;
+in vec4 nPosition;
 layout (location = 0) out vec4 rtFragColor;
-layout (location = 1) out vec4 aPosition;
 uniform vec2 uResolution;
 uniform sampler2D uTex; // represented by integer (0)
 void main()
 {
 //sampler.uv
-// ux = screen location / screen resolution
+// uv = screen location / screen resolution
 // 2) (something to do with attribute: texture coordinate)
 vec2 uv = vTexcoord;
 vec2 texCoordScale = vec2(1.0);
 vec2 scalar = vTexcoord + texCoordScale;
 //vec2 uv =  gl_FragCoord.xy / uResolution;
+// set iChannel0 to 'Misc/Buffer A' and fetch sample
 vec4 color = texture(uTex, uv);
-vec2 tc = (2.0 * aPosition.xy + 3.5 * vec2(12 % 5-2, 12 /5-2));
-vec3 col = texture(uTex,uv).rgb;//start calculating luminance
-float lum = col.r*0.3 + col.g*0.59 + col.b*0.11;
-float lumFinal = -((1.0)/1.0+pow(2.718281,(lum*10.0)-5.0))+1.0;
+vec2 tc = (2.0 * nPosition.xy + 3.5 * vec2(12 % 5-2, 12 /5-2));
+vec3 col = texture(uTex,uv).rgb;
+float lum = col.r*0.3 + col.g*0.59 + col.b*0.11;//sets luminance 12 
+
+//float lumFinal = -((1.0)/1.0+pow(2.718281,(lum*10.0)-5.0))+1.0;
 rtFragColor = lum * lum *lum * lum * color;
 }
