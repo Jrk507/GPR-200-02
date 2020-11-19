@@ -1,5 +1,5 @@
 #version 300 es
-
+//Authors: Jason Kmieciak & Nicholas Sanguine 
 #ifdef GL_ES
 precision highp float;
 #endif //GL_ES
@@ -17,6 +17,7 @@ vec2 uv = vTexcoord;
 vec2 texCoordScale = vec2(1.0);
 vec2 scalar = vTexcoord + texCoordScale;
 //vec2 uv =  gl_FragCoord.xy / uResolution;
+//Gauss blur without matrix
 vec4 color = texture(uTex, uv) * 41.0;
 color += texture(uTex,uv)*41.0;
 color += texture(uTex,scalar*vec2(-1,0.0) )*26.0;

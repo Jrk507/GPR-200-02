@@ -1,5 +1,5 @@
 #version 300 es
-
+//Authors: Jason Kmieciak & Nicholas Sanguine 
 layout (location = 0) in vec4 aPosition;
 layout (location = 1) in vec3 aNormal;
 uniform mat4 uModelmat, uViewMat, UProjMat;

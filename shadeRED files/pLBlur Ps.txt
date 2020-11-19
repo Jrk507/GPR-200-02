@@ -1,5 +1,5 @@
 #version 300 es
-
+//Authors: Jason Kmieciak & Nicholas Sanguine 
 #ifdef GL_ES
 precision highp float;
 #endif //GL_ES
@@ -20,9 +20,8 @@ vec2 scalar = vTexcoord + texCoordScale;
 //vec2 uv =  gl_FragCoord.xy / uResolution;
 vec4 color = texture(uTex, uv);
 vec2 tc = (2.0 * aPosition.xy + 3.5 * vec2(12 % 5-2, 12 /5-2));
-vec3 col = texture(uTex,uv).rgb;
+vec3 col = texture(uTex,uv).rgb;//start calculating luminance
 float lum = col.r*0.3 + col.g*0.59 + col.b*0.11;
-
 float lumFinal = -((1.0)/1.0+pow(2.718281,(lum*10.0)-5.0))+1.0;
 rtFragColor = lum * lum *lum * lum * color;
 }
