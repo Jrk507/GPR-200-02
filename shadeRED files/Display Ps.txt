@@ -10,9 +10,7 @@ uniform vec2 uResolution;
 uniform sampler2D uTex; // represented by integer (0)
 uniform sampler2D uTex2;
 uniform sampler2D uTex3;
-uniform sampler2D uTex4;
 uniform float uTime;
-
 
 void main()
 {
@@ -20,10 +18,12 @@ void main()
 // ux = screen location / screen resolution
 // 2) (something to do with attribute: texture coordinate)
 vec2 uv = vTexcoord;
+
 //vec2 uv =  gl_FragCoord.xy / uResolution;
 vec4 col = texture(uTex, uv);
 vec4 col2 = texture(uTex2, uv);
 vec4 col3 = texture(uTex3, uv);
+
 
 col2 = col2 * 20.0;//multiply  col2 to make it show darker later.
 //rtFragColor = vec4(1.0,0.5,0.0,1.0);
@@ -33,6 +33,7 @@ rtFragColor = col * (1.0-col2);
 //rtFragColor = col2;//geometry
 //rtFragColor = col;//full pipeline of bloom
 //rtFragColor = col3;//static texture
+//rtFragColor = col2;
 //rtFragColor = col * col3;//multiply
 //rtFragColor = col + col3;//add
 //rtFragColor = mix(col3,col,cos(uTime));//mix

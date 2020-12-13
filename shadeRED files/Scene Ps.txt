@@ -13,6 +13,6 @@ void main()
 {
 rtFragColor = vNormal+ vec4(1.0,0.5,0.0,1.0);//More distinct coloration for debugging
  	//rtFragColor =  vec4(0.5) *vec4(100.0);
- 	//rtFragColor = vec4(0.0,0.5,0.0,0.0) * vec4(100.0); 
+   //rtFragColor = vec4(0.0,0.5,0.0,0.0) * vec4(100.0); 
  	//rtFragColor = vNormal *vec4(100.0) ;
 }
