@@ -1,5 +1,8 @@
 #version 300 es
 //Authors: Jason Kmieciak & Nicholas Sanguine
+//Credit:lab8: Branch: lab 8 : https://github.com/Jrk507/GPR-200-02.git
+
+
 #ifdef GL_ES
 precision highp float;
 #endif //GL_ES
@@ -29,11 +32,11 @@ col2 = col2 * 20.0;//multiply  col2 to make it show darker later.
 //rtFragColor = vec4(1.0,0.5,0.0,1.0);
 //rtFragColor = vec4(uv, 0.0,1.0);
 //rtFragColor = col*col2*(1.0-col3);
-rtFragColor = col * (1.0-col2);
+//rtFragColor = col * (col2);
 //rtFragColor = col2;//geometry
 //rtFragColor = col;//full pipeline of bloom
 //rtFragColor = col3;//static texture
-//rtFragColor = col2;
+rtFragColor = col2;
 //rtFragColor = col * col3;//multiply
 //rtFragColor = col + col3;//add
 //rtFragColor = mix(col3,col,cos(uTime));//mix

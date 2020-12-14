@@ -1,0 +1,32 @@
+#version 300 es
+//Authors: Jason Kmieciak & Nicholas Sanguine
+//Credit: by JEGX :https://www.geeks3d.com/20140213/glsl-shader-library-fish-eye-and-dome-and-barrel-distortion-post-processing-filters/2/
+//Credit: lab 5: branch-0 : https://github.com/Jrk507/GPR-200-02.git
+#ifdef GL_ES
+precision highp float;
+#endif //GL_ES
+
+in vec2 vTexcoord;
+in vec2 px;
+layout (location = 0) out vec4 rtFragColor;
+uniform vec2 uResolution;
+uniform sampler2D uTex; // represented by integer (0)
+uniform float iTime;
+uniform vec2 ViewportSize;
+uniform vec2 MousePosition;
+void main()
+{
+	vec2 pxv = px;
+	vec2 loc = px/ViewportSize.y;
+	float ratio = ViewportSize.y * (1.0/ViewportSize).y;
+	loc = loc * ratio + 1.0;
+	float intensity = -1.0;
+	//float intensity = MousePosition.x + MousePosition.y;
+	float theta  = atan(px.y, px.x);//y over x for the returned fraction in the -π/2 , π/2 range
+    float radius = length(px); //thinking in circles we need a radius from the passed position
+    radius = pow(radius, intensity);//strength of distortion on the radius applied here
+    pxv.x = radius * cos(theta);//alter x coord different trig functions change it greatly
+    pxv.y = radius * tan(theta);//alter y coord
+    vec4 color = texture(uTex, pxv);//final alteration of coordinate // if you add or subtract in the parenthesis it picks up or
+    rtFragColor = color;
+}

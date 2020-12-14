@@ -3,6 +3,7 @@
 layout (location = 0) in vec4 aPosition;
 //layout (location = 2) in vec2 aTexcoord;
 out vec2 vTexcoord;
+out vec2 px;
 uniform sampler2D uTex; // represented by integer (0)
 out vec4 nPosition;
 void main()
@@ -11,4 +12,5 @@ gl_Position = aPosition;// * vec4(0.5, 0.5, 0.5, 1.0);
 // gl_Position = aPosition; // ;(
  vTexcoord = aPosition.xy * 0.5 + 0.5;// NDC -> Screen; [-1,1] -> [0,1]
  nPosition = aPosition;
+ px = aPosition.xy;
 }

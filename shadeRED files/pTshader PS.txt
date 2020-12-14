@@ -1,6 +1,6 @@
 #version 300 es
 //Authors: Jason Kmieciak & Nicholas Sanguine
-//Credit Lab 6: Branch Lab-6-https://github.com/Jrk507/GPR-200-02.git
+//Credit: by JEGX : https://www.geeks3d.com/20101123/shader-library-predators-thermal-vision-post-processing-filter-glsl/
 #ifdef GL_ES
 precision highp float;
 #endif //GL_ES
@@ -14,18 +14,18 @@ void main()
 {
 	vec2 uv = vTexcoord;
 	vec4 tc = vec4(0.0, 0.0, 0.0,1.0);
-	if(uv.x < (cos(iTime) - 0.005))
+	if(uv.x < (cos(iTime) - 0.005))//Distort coloration to the left of bar and changes size
 	{
 		vec4 color = texture(uTex, uv);
-		vec4 col[3];
-		col[0] = vec4(0.0,0.0,1.0,1.0);
-   	 	col[1] = vec4(1.0,1.0,0.0,1.0);
-    	col[2] = vec4(1.0,0.0,0.0,1.0);
+		vec4 col[3];//3 layers of sliding effect
+		col[0] = vec4(0.0,0.0,1.0,1.0);//Blue Layer
+   	 	col[1] = vec4(1.0,1.0,0.0,1.0);//Yellow Layer
+    	col[2] = vec4(1.0,0.0,0.0,1.0);//Red Layer 
    		float lum = color.r*0.3 + color.g*0.59 + color.b*0.11;
-   		int ix = (lum < 0.5)? 0:1;
+   		int ix = (lum < 0.5)? 0:1;//Ratio of red to blue
    		 tc = mix(col[ix],col[ix+1],(lum-float(ix)*0.5)/0.5);
 	}
-	else if (uv.x>=(cos(iTime)+0.005))
+	else if (uv.x>=(cos(iTime)+0.005))//Displays original colors to the right of the bar
   {
      tc = texture(uTex, uv);
   }
